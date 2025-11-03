@@ -150,6 +150,10 @@
         integrity="sha512-n8IpKWzDnBOcBhRlHirMZOUvEq2bLRMuJGjuVqbzUJwtTsgwOgK5aS0c1JA647XWYfqvXve8k3PtZdzpipFjgg=="
         crossorigin="anonymous"></script>
     <script src="https://unpkg.com/three@0.126.0/examples/js/loaders/GLTFLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.126.1/examples/js/controls/OrbitControls.js"
+        integrity="sha256-+ncCNttOcMopCUa47Sn26Tg06ZC2SnWoi/XikKAhnSY=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three-x3@0.0.10/dist/x3-standalone.js"
+        integrity="sha256-oKQUM+QPtvuvLmxpqxdxbrJAq21SZ+7hYK8WlGztXNE=" crossorigin="anonymous"></script>
     <script>
 
         let scene, camera, renderer, floor;
@@ -168,6 +172,7 @@
         let obstacles = []; // Pedestais e objetos
         const playerRadius = 0.5; // Raio de colisão do jogador
         const gltfLoader = new THREE.GLTFLoader();
+        let x3;
 
         // Configuração inicial
         function init() {
@@ -244,6 +249,20 @@
                 <p style="font-size: 11px; margin-top: 10px;">Clique nos ícones 'i' azuis para ver informações</p>
             `;
 
+            // Inicializar x3 debugger após todos os elementos estarem criados
+            try {
+                x3 = new THREEx3({
+                    THREE,
+                    OrbitControls: THREE.OrbitControls,
+                    camera,
+                    renderer,
+                    scene
+                });
+            } catch (error) {
+                console.warn('x3 debugger não disponível:', error);
+            }
+
+
             // Iniciar animação
             renderer.setAnimationLoop(animate);
         }
@@ -287,15 +306,9 @@
                 max: new THREE.Vector3(10.1, 5, 10)
             });
 
-            // Parede frontal invisível (para não sair do museu)
-            walls.push({
-                min: new THREE.Vector3(-10, 0, 9.9),
-                max: new THREE.Vector3(10, 5, 10.1)
-            });
-
             // Pedestais com objetos
             createPedestal(-5, 0, -5, 0xff6b6b, "Estação Espacial Internacional", "Uma representação detalhada da ISS, destacando sua arquitetura única e módulos científicos.", "./models/ISS Correctglb.glb");
-            createPedestal(0, 0, -5, 0x4ecdc4, "Saturn V", "Um dos foguetes mais poderosos já construídos, simbolizando a exploração espacial.w", "./models/saturn V.glb");
+            createPedestal(0, 0, -5, 0x4ecdc4, "Saturn V", "Um dos foguetes mais poderosos já construídos, simbolizando a exploração espacial.w", "./models/saturnVCorrect.glb");
             createPedestal(5, 0, -5, 0xffe66d, "Ouro Solar", "Inspirada nos raios do sol, esta escultura captura luz e movimento em harmonia perfeita.", "./models/Voyager.glb");
             createPedestal(-5, 0, 0, 0x95e1d3, "Serenidade Verde", "Representa a natureza e crescimento. Observe os detalhes entrelaçados.", "./models/jwst_james_webb_space_telescope.glb");
             createPedestal(5, 0, 0, 0xf38181, "Rosa Eterno", "Uma homenagem ao amor e delicadeza. Técnica mista com elementos metálicos.");
@@ -471,8 +484,8 @@
             mouseX = (event.clientX / window.innerWidth) * 2 - 1;
             mouseY = (event.clientY / window.innerHeight) * 2 - 1;
 
-            // Calcular rotação alvo
-            targetRotationY = -mouseX * Math.PI * 0.5; // 180 graus de range horizontal
+            // Calcular rotação alvo - 360 graus de rotação horizontal
+            targetRotationY = -mouseX * Math.PI; // 360 graus de range horizontal (antes era 180)
             targetRotationX = -mouseY * Math.PI * 0.25; // 90 graus de range vertical
         }
 
@@ -561,7 +574,9 @@
 
             prevTime = time;
 
-            renderer.render(scene, camera);
+            x3.fps(() => {
+                renderer.render(scene, camera);
+            })
 
             // Atualizar posição dos hotspots
             updateHotspots();
