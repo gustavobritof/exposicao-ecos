@@ -37,6 +37,69 @@
             max-width: 300px;
             z-index: 100;
         }
+
+        .info-panel {
+            position: absolute;
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            max-width: 300px;
+            pointer-events: auto;
+            z-index: 100;
+            display: none;
+        }
+
+        .info-panel.active {
+            display: block;
+        }
+
+        .info-panel h3 {
+            margin: 0 0 10px 0;
+            color: #1976d2;
+        }
+
+        .info-panel p {
+            margin: 0;
+            color: #333;
+            line-height: 1.5;
+        }
+
+        .info-panel .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: #f44336;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            cursor: pointer;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .info-panel .close-btn:hover {
+            background: #d32f2f;
+        }
+
+        .info-panel button {
+            margin-top: 10px;
+            padding: 8px 16px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            width: 100%;
+        }
+
+        .info-panel button:hover {
+            background: #45a049;
+        }
     </style>
 </head>
 
@@ -56,11 +119,11 @@
             <a-asset-item id="issModel" src="./models/ISS Correctglb.glb"></a-asset-item>
         </a-assets>
 
-        <!-- Câmera com controles -->
-        <!-- <a-entity id="rig" position="0 1.6 5" wasd-controls="acceleration: 25" look-controls>
-            <a-entity camera position="0 0 0" look-controls>
-            </a-entity>
-        </a-entity> -->
+        <a-entity id="rig" position="0 0 0">
+            <a-camera>
+                <a-cursor id="cursor" color="white"></a-cursor>
+            </a-camera>
+        </a-entity>
 
         <!-- Iluminação -->
         <a-light type="ambient" color="#fff" intensity="0.1"></a-light>
@@ -111,27 +174,113 @@
             class="portal" data-env="launch-pad" data-label="🔥 Launch Pad">
         </a-cylinder> -->
 
-        <!-- Pedestais vazios  -->
-        <a-cylinder position="-5 0.5 -5" radius="0.5" height="1" color="#cccccc" roughness="0.7"></a-cylinder>
-        <a-cylinder position="0 0.5 -5" radius="0.5" height="1" color="#cccccc" roughness="0.7"></a-cylinder>
-        <a-cylinder position="5 0.5 -5" radius="0.5" height="1" color="#cccccc" roughness="0.7"></a-cylinder>
-        <a-cylinder position="-5 0.5 0" radius="0.5" height="1" color="#cccccc" roughness="0.7"></a-cylinder>
-        <a-cylinder position="5 0.5 0" radius="0.5" height="1" color="#cccccc" roughness="0.7"></a-cylinder>
 
-        <!-- Modelos 3D nas posições dos pedestais -->
-        <a-entity gltf-model="#hubbleModel" position="-5 1.5 -5" scale="0.0003 0.0003 0.0003"
-            animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"></a-entity>
-        <a-entity gltf-model="#jwstModel" position="0 1.5 -5" scale="0.05 0.05 0.05"
-            animation="property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear"
-            material="emissive: #333333; emissiveIntensity: 0.5"></a-entity>
-        <a-entity gltf-model="#saturnVModel" position="5 1.5 -5" scale="0.3 0.3 0.3"
-            animation="property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear"></a-entity>
-        <a-entity gltf-model="#issModel" position="-5 1.5 0" scale="0.1 0.1 0.1"
-            animation="property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear"></a-entity>
+        <!-- Modelo 1: Hubble -->
+        <a-entity gltf-model="#hubbleModel" position="-5 1.5 -5" scale="0.0003 0.0003 0.0003" class="interactive"
+            data-title="Hubble Space Telescope"
+            data-description="O telescópio espacial Hubble revolucionou nossa visão do universo, revelando galáxias distantes e estruturas cósmicas."
+            animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear">
+        </a-entity>
+        <a-cylinder obb-collider position="-5 0.5 -5" radius="0.5" height="1" color="#cccccc"
+            roughness="0.7"></a-cylinder>
+
+        <!-- Modelo 2: JWST -->
+        <a-entity gltf-model="#jwstModel" position="0 1.5 -5" scale="0.05 0.05 0.05" class="interactive"
+            data-title="James Webb Space Telescope"
+            data-description="O telescópio espacial mais avançado, observando o universo em infravermelho para detectar as galáxias mais antigas."
+            animation="property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear">
+        </a-entity>
+        <a-cylinder position="0 0.5 -5" radius="0.5" height="1" color="#cccccc" roughness="0.7"></a-cylinder>
+
+        <!-- Modelo 3: Saturn V -->
+        <a-entity gltf-model="#saturnVModel" position="5 1.5 -5" scale="0.3 0.3 0.3" class="interactive"
+            data-title="Saturn V Rocket"
+            data-description="O foguete mais poderoso já construído, levou os astronautas à Lua durante o programa Apollo."
+            animation="property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear">
+        </a-entity>
+        <a-cylinder position="5 0.5 -5" radius="0.5" height="1" color="#cccccc" roughness="0.7"></a-cylinder>
+
+        <!-- Modelo 4: ISS -->
+        <a-entity gltf-model="#issModel" position="-5 1.5 0" scale="0.1 0.1 0.1" class="interactive"
+            data-title="International Space Station"
+            data-description="A estação espacial mais importante da história, onde astronautas de vários países trabalham em pesquisa científica."
+            animation="property: rotation; to: 0 360 0; loop: true; dur: 5000; easing: linear">
+        </a-entity>
+        <a-cylinder position="-5 0.5 0" radius="0.5" height="1" color="#cccccc" roughness="0.7"></a-cylinder>
+
+        <a-cylinder position="5 0.5 0" radius="0.5" height="1" color="#cccccc" roughness="0.7"></a-cylinder>
 
     </a-scene>
 
+    <div id="infoPanel" class="info-panel">
+        <button class="close-btn">×</button>
+        <h3 id="panelTitle">Título</h3>
+        <p id="panelDescription">Descrição</p>
+        <button id="detailViewBtn">Ver em 3D</button>
+    </div>
 
+    <script>
+        //  hotspots e interações
+        const interactiveObjects = document.querySelectorAll('.interactive');
+        const infoPanel = document.getElementById('infoPanel');
+        const closeBtn = document.querySelector('.close-btn');
+        const detailViewBtn = document.getElementById('detailViewBtn');
+        const camera = document.querySelector('[camera]');
+        const cursor = document.getElementById('cursor');
+
+        let currentObject = null;
+
+        interactiveObjects.forEach(obj => {
+            obj.addEventListener('click', (e) => {
+                showInfoPanel(obj);
+            });
+
+            // Hover effect (mudança de escala)
+            obj.addEventListener('mouseenter', () => {
+                obj.setAttribute('scale', `${obj.getAttribute('scale').x * 1.1} ${obj.getAttribute('scale').y * 1.1} ${obj.getAttribute('scale').z * 1.1}`);
+                cursor.setAttribute('color', 'green');
+            });
+
+            obj.addEventListener('mouseleave', () => {
+                obj.setAttribute('scale', `${obj.getAttribute('scale').x / 1.1} ${obj.getAttribute('scale').y / 1.1} ${obj.getAttribute('scale').z / 1.1}`);
+                cursor.setAttribute('color', '#FFFFFF');
+            });
+        });
+
+        // Mostrar painel de informações
+        function showInfoPanel(object) {
+            currentObject = object;
+            const title = object.getAttribute('data-title');
+            const description = object.getAttribute('data-description');
+
+            document.getElementById('panelTitle').textContent = title;
+            document.getElementById('panelDescription').textContent = description;
+
+            infoPanel.classList.add('active');
+
+            // Posicionar o painel no lado direito da tela
+            infoPanel.style.right = '20px';
+            infoPanel.style.top = '50%';
+            infoPanel.style.transform = 'translateY(-50%)';
+        }
+
+        // Fechar painel
+        closeBtn.addEventListener('click', () => {
+            infoPanel.classList.remove('active');
+            currentObject = null;
+        });
+
+        // Botão ver em 3D
+        detailViewBtn.addEventListener('click', () => {
+            if (currentObject) {
+                alert('Função "Ver em 3D" será redirecionada para a sala de detalhes!');
+                // Aqui você pode fazer redirect para a página de detalhes
+                // window.location.href = 'detail-view.html?model=nome-do-modelo';
+            }
+        });
+
+        console.log('Museu com hotspots carregado com sucesso!');
+    </script>
 </body>
 
 </html>
