@@ -143,7 +143,7 @@
         </a-assets>
 
         <!-- Câmera e Cursor (Compartilhado) -->
-        <a-entity id="rig" position="0 0 0">                
+        <a-entity id="rig" position="0 0 0">
             <a-camera position="0 1.6 0" look-controls="pointerLockEnabled: false">
                 <a-cursor id="cursor" color="white" raycaster="objects: .clickable"></a-cursor>
                 <!-- Anel extra para a cena 2 -->
@@ -323,6 +323,41 @@
             </a-entity>
 
 
+        </a-entity>
+
+        <!-- ========================================== -->
+        <!-- GRUPO 3: VISUALIZADOR 3D (SCENE 3)         -->
+        <!-- ========================================== -->
+        <a-entity id="scene-viewer" visible="false" position="0 0 0">
+            <!-- Iluminação Visualizador -->
+            <a-light type="ambient" intensity="0.7" color="#ffffff"></a-light>
+            <a-light type="directional" intensity="0.8" position="5 5 5" color="#ffffff"></a-light>
+            <a-light type="point" intensity="0.6" position="-5 3 -5" color="#e0f0ff"></a-light>
+            <a-light type="point" intensity="0.6" position="5 3 -5" color="#e0f0ff"></a-light>
+            <a-light type="point" intensity="0.6" position="0 3 5" color="#e0f0ff"></a-light>
+
+            <!-- Fundo Gradiente (Sky) -->
+            <a-sky color="#1a1a2e"></a-sky>
+
+            <!-- Piso Reflexivo -->
+            <a-plane rotation="-90 0 0" width="30" height="30" color="#16213e" roughness="0.3" metalness="0.5"
+                shadow></a-plane>
+
+            <!-- MODELO DINÂMICO (Centro) -->
+            <a-entity id="viewer-model-holder" position="0 1.5 -2">
+                <a-light type="ambient" color="#ffffff" intensity="1"></a-light>
+            </a-entity>
+
+            <a-entity id="viewer-target" position="0 1.5 -2"></a-entity>
+
+
+            <!-- Informações do Modelo -->
+            <a-text id="viewer-model-title" value="" position="0 4 -5" align="center" anchor="center" color="#87ceeb"
+                font-size="48" font-weight="bold" width="20"></a-text>
+
+            <!-- Instruções -->
+            <a-text value="Arraste para rotacionar | Clique em VOLTAR para sair" position="0 -4 -5" align="center"
+                anchor="center" color="#cccccc" font-size="20" width="18" line-height="60"></a-text>
         </a-entity>
 
     </a-scene>
@@ -526,6 +561,7 @@
         // ==========================================
         // LÓGICA DE TRANSIÇÃO DE CENAS
         // ==========================================
+        // ...existing code...
         function switchToGallery(exhibitData) {
             selectedExhibitData = exhibitData;
             infoPanel.style.display = 'none'; // Fecha o painel
@@ -535,16 +571,16 @@
 
             const galleryScene = document.getElementById('scene-gallery');
             galleryScene.setAttribute('visible', 'true');
-            
+
             // Mover a câmera/rig para a posição da galeria (offset de 100 em X)
             const rig = document.getElementById('rig');
             rig.setAttribute('position', '100 0 0');
             rig.setAttribute('rotation', '0 0 0');
-            
+
             // Resetar rotação da câmera através do componente look-controls
             const cameraEl = camera;
             cameraEl.setAttribute('rotation', '0 0 0');
-            
+
             // Forçar reset do look-controls
             if (cameraEl.components['look-controls']) {
                 cameraEl.components['look-controls'].pitchObject.rotation.x = 0;
@@ -562,6 +598,12 @@
             modelEl.setAttribute('scale', exhibitData.scale);
             modelEl.setAttribute('animation', `property: rotation; to: 0 360 0; loop: true; dur: ${exhibitData.duration}; easing: linear`);
             modelEl.setAttribute('shadow', '');
+            modelEl.setAttribute('class', 'clickable');
+
+            // NOVO: Clique para abrir visualizador 3D
+            modelEl.addEventListener('click', () => {
+                switchToViewer(exhibitData);
+            });
 
             holder.appendChild(modelEl);
 
@@ -577,23 +619,148 @@
             currentScene = 'detail';
         }
 
-        function switchToMuseum() {
+        // ==========================================
+        // NOVO: TRANSIÇÃO PARA VISUALIZADOR 3D
+        // ==========================================
+        function switchToViewer(exhibitData) {
+            selectedExhibitData = exhibitData;
             infoPanel.style.display = 'none';
-            selectedExhibitData = null;
+            btnVoltar.style.display = 'none';
 
             // 1. Troca Visibilidade
             document.getElementById('scene-gallery').setAttribute('visible', 'false');
+            document.getElementById('scene-viewer').setAttribute('visible', 'true');
+
+            // 2. Move câmera para cena 3 e desativa look-controls
+            const rig = document.getElementById('rig');
+            rig.setAttribute('position', '0 0 0');
+            rig.setAttribute('rotation', '0 0 0');
+
+            const cameraEl = camera;
+            cameraEl.setAttribute('look-at', '#viewer-target');
+            cameraEl.setAttribute('look-controls', 'enabled:false');
+            cameraEl.setAttribute('wasd-controls', 'enabled:false');
+
+
+            // 3. Carrega modelo no visualizador
+            const viewerHolder = document.getElementById('viewer-model-holder');
+            viewerHolder.innerHTML = '<a-light type="ambient" color="#ffffff" intensity="1"></a-light>';
+
+            const modelEl = document.createElement('a-entity');
+            modelEl.setAttribute('gltf-model', exhibitData.model);
+            modelEl.setAttribute('scale', exhibitData.scale);
+            modelEl.setAttribute('rotation', exhibitData.rotation || '0 0 0');
+            modelEl.setAttribute('shadow', '');
+            modelEl.setAttribute('id', 'rotating-model');
+
+            viewerHolder.appendChild(modelEl);
+
+            // 4. Atualiza título
+            document.getElementById('viewer-model-title').setAttribute('value', exhibitData.title);
+
+            // 5. Configura interação de rotação com mouse
+            setupViewerRotation(modelEl);
+
+            // 6. Botão voltar integrado
+            setupViewerBackButton();
+
+            currentScene = 'viewer';
+        }
+
+        // ==========================================
+        // CONTROLE DE ÓRBITA LIVRE (3D)
+        // ==========================================
+        let isRotating = false;
+        let cameraOrbitX = 0;
+        let cameraOrbitY = 0;
+        let lastMouseX = 0;
+        let lastMouseY = 0;
+        const orbitDistance = 4; // Distância da câmera ao modelo
+
+        function setupViewerRotation(modelEl) {
+            document.addEventListener('mousedown', (e) => {
+                if (currentScene === 'viewer') {
+                    isRotating = true;
+                    lastMouseX = e.clientX;
+                    lastMouseY = e.clientY;
+                }
+            });
+
+            document.addEventListener('mousemove', (e) => {
+                if (isRotating && currentScene === 'viewer') {
+                    const deltaX = e.clientX - lastMouseX;
+                    const deltaY = e.clientY - lastMouseY;
+
+                    cameraOrbitY += deltaX * 0.8;
+                    cameraOrbitX += deltaY * 0.8;
+
+                    // Limita rotação X entre -89 e 89 (permite girar completamente mas evita flip)
+                    cameraOrbitX = Math.max(-89, Math.min(89, cameraOrbitX));
+
+                    // Calcula nova posição da câmera em órbita esférica
+                    const radX = (cameraOrbitX * Math.PI) / 180;
+                    const radY = (cameraOrbitY * Math.PI) / 180;
+
+                    const camX = orbitDistance * Math.cos(radX) * Math.sin(radY);
+                    const camY = orbitDistance * Math.sin(radX) + 1.5; // +1.5 para altura
+                    const camZ = orbitDistance * Math.cos(radX) * Math.cos(radY);
+
+                    const rig = document.getElementById('rig');
+                    rig.setAttribute('position', `${camX} ${camY} ${camZ}`);
+
+
+
+                    lastMouseX = e.clientX;
+                    lastMouseY = e.clientY;
+                }
+            });
+
+            document.addEventListener('mouseup', () => {
+                isRotating = false;
+            });
+        }
+
+        function setupViewerBackButton() {
+            // const backButton = document.getElementById('viewer-back-button');
+
+            // backButton.addEventListener('mouseenter', () => {
+            //     backButton.querySelector('a-box').setAttribute('color', '#6bb3e0');
+            // });
+
+            // backButton.addEventListener('mouseleave', () => {
+            //     backButton.querySelector('a-box').setAttribute('color', '#87ceeb');
+            // });
+
+            // backButton.addEventListener('click', () => {
+            //     // Reativa look-controls ao voltar
+            //     camera.setAttribute('look-controls', 'enabled: true');
+            //     switchToGallery(selectedExhibitData);
+            // });
+            console.log("Botão voltar configurado");
+        }
+
+
+        function switchToMuseum() {
+            infoPanel.style.display = 'none';
+            selectedExhibitData = null;
+            isRotating = false;
+
+            // Reativa look-controls ao voltar ao museu
+            camera.setAttribute('look-controls', 'enabled: true');
+
+            // 1. Troca Visibilidade
+            document.getElementById('scene-gallery').setAttribute('visible', 'false');
+            document.getElementById('scene-viewer').setAttribute('visible', 'false');
             document.getElementById('scene-museum').setAttribute('visible', 'true');
 
             // 2. Reseta Posição e Rotação do Rig e Câmera
             const rig = document.getElementById('rig');
             rig.setAttribute('position', '0 0 0');
             rig.setAttribute('rotation', '0 0 0');
-            
-            // Resetar rotação da câmera através do componente look-controls
+
             const cameraEl = camera;
             cameraEl.setAttribute('rotation', '0 0 0');
-            
+
             // Forçar reset do look-controls
             if (cameraEl.components['look-controls']) {
                 cameraEl.components['look-controls'].pitchObject.rotation.x = 0;
