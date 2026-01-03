@@ -2,312 +2,291 @@
 <html lang="pt-br">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Museu Espacial VR</title>
-    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
-    <script src="https://unpkg.com/aframe-orbit-controls@1.3.2/dist/aframe-orbit-controls.min.js"></script>
-    <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            font-family: Arial, sans-serif;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Museu Espacial VR</title>
+  <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+  <script src="https://unpkg.com/aframe-orbit-controls@1.3.2/dist/aframe-orbit-controls.min.js"></script>
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
 
-        /* Estilos do Painel de Informações (UI Overlay) */
-        #info-panel {
-            display: none;
-            /* Começa oculto */
-            position: absolute;
-            top: 50%;
-            right: 20px;
-            transform: translateY(-50%);
-            background: white;
-            padding: 20px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
-            max-width: 300px;
-            z-index: 1000;
-        }
+    /* Estilos do Painel de Informações (UI Overlay) */
+    #info-panel {
+      display: none;
+      /* Começa oculto */
+      position: absolute;
+      top: 50%;
+      right: 20px;
+      transform: translateY(-50%);
+      background: white;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+      max-width: 300px;
+      z-index: 1000;
+    }
 
-        #panel-title {
-            margin: 0 0 10px 0;
-            color: #1976d2;
-        }
-
-
-        #panel-desc {
-            margin: 0 0 15px 0;
-            color: #333;
-            line-height: 1.5;
-        }
-
-        #info-panel.theme-dark #panel-desc {
-            color: #4a6b82;
-        }
-
-        #close-btn {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background: #f44336;
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 25px;
-            height: 25px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-
-        #info-panel.theme-dark #close-btn {
-            background: #87ceeb;
-            color: #ffffff;
-            width: 30px;
-            height: 30px;
-            font-weight: bold;
-        }
-
-        #action-btn {
-            width: 100%;
-            padding: 8px 16px;
-            background: #4CAF50;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
+    #panel-title {
+      margin: 0 0 10px 0;
+      color: #1976d2;
+    }
 
 
-        /* Botão Voltar (Overlay) */
-        #btn-voltar {
-            display: none;
-            position: absolute;
-            top: 20px;
-            left: 20px;
-            background: #87ceeb;
-            color: #ffffff;
-            border: none;
-            padding: 12px 24px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: bold;
-            box-shadow: 0 4px 15px rgba(135, 206, 235, 0.4);
-            z-index: 1000;
-            transition: all 0.3s ease;
-        }
+    #panel-desc {
+      margin: 0 0 15px 0;
+      color: #333;
+      line-height: 1.5;
+    }
 
-        #btn-voltar:hover {
-            background: #6bb3e0;
-            box-shadow: 0 6px 20px rgba(135, 206, 235, 0.6);
-            transform: scale(1.05);
-        }
-    </style>
+    #info-panel.theme-dark #panel-desc {
+      color: #4a6b82;
+    }
+
+    #close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background: #f44336;
+      color: white;
+      border: none;
+      border-radius: 50%;
+      width: 25px;
+      height: 25px;
+      cursor: pointer;
+      font-size: 16px;
+    }
+
+    #info-panel.theme-dark #close-btn {
+      background: #87ceeb;
+      color: #ffffff;
+      width: 30px;
+      height: 30px;
+      font-weight: bold;
+    }
+
+    #action-btn {
+      width: 100%;
+      padding: 8px 16px;
+      background: #4CAF50;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-top: 10px;
+    }
+
+
+    /* Botão Voltar (Overlay) */
+    #btn-voltar {
+      display: none;
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: #87ceeb;
+      color: #ffffff;
+      border: none;
+      padding: 12px 24px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      font-weight: bold;
+      box-shadow: 0 4px 15px rgba(135, 206, 235, 0.4);
+      z-index: 1000;
+      transition: all 0.3s ease;
+    }
+
+    #btn-voltar:hover {
+      background: #6bb3e0;
+      box-shadow: 0 6px 20px rgba(135, 206, 235, 0.6);
+      transform: scale(1.05);
+    }
+  </style>
 </head>
 
 <body>
 
-    <!-- Botão Voltar (HTML Overlay) -->
-    <button id="btn-voltar">← VOLTAR</button>
+  <!-- Botão Voltar (HTML Overlay) -->
+  <button id="btn-voltar">← VOLTAR</button>
 
-    <!-- Overlay HTML (Painel de Info) -->
-    <div id="info-panel">
-        <button id="close-btn">×</button>
-        <h3 id="panel-title">Título</h3>
-        <p id="panel-desc">Descrição</p>
-        <button id="action-btn">Ver em 3D</button>
-    </div>
+  <!-- Overlay HTML (Painel de Info) -->
+  <div id="info-panel">
+    <button id="close-btn">×</button>
+    <h3 id="panel-title">Título</h3>
+    <p id="panel-desc">Descrição</p>
+    <button id="action-btn">Ver em 3D</button>
+  </div>
 
-    <!-- Cena A-Frame -->
-    <a-scene>
-        <a-assets>
-            <img id="skyTexture" src="/images/sky.jpg" alt="Sky Texture">
-            <a-asset-item id="hubble-model" src="/models/hubble.glb"></a-asset-item>
-            <a-asset-item id="jwst-model" src="/models/jwst_james_webb_space_telescope.glb"></a-asset-item>
-            <a-asset-item id="saturnv-model" src="/models/saturnVCorrect.glb"></a-asset-item>
-            <a-asset-item id="iss-model" src="/models/ISS_Correct.glb"></a-asset-item>
-            <a-asset-item id="voyager-model" src="/models/voyager.glb"></a-asset-item>
-        </a-assets>
+  <!-- Cena A-Frame -->
+  <a-scene>
+    <a-assets>
+      <img id="skyTexture" src="/images/sky.jpg" alt="Sky Texture">
+      <a-asset-item id="hubble-model" src="/models/hubble.glb"></a-asset-item>
+      <a-asset-item id="jwst-model" src="/models/jwst_james_webb_space_telescope.glb"></a-asset-item>
+      <a-asset-item id="saturnv-model" src="/models/saturnVCorrect.glb"></a-asset-item>
+      <a-asset-item id="iss-model" src="/models/ISS_Correct.glb"></a-asset-item>
+      <a-asset-item id="voyager-model" src="/models/voyager.glb"></a-asset-item>
+    </a-assets>
 
-        <!-- Câmera e Cursor (Compartilhado) -->
-        <a-entity id="rig" position="0 0 0">
-            <a-camera position="0 1.6 0" look-controls="pointerLockEnabled: false">
-                <a-cursor id="cursor" color="white" raycaster="objects: .clickable"></a-cursor>
-                <!-- Anel extra para a cena 2 -->
-                <a-ring id="cursor-ring" visible="false" color="#87ceeb" radius-inner="0.02" radius-outer="0.03"
-                    position="0 0 -1" scale="0.01 0.01 0.01"></a-ring>
-            </a-camera>
+    <!-- Câmera e Cursor (Compartilhado) -->
+    <a-entity id="rig" position="0 0 0">
+      <a-camera position="0 1.6 0" look-controls="pointerLockEnabled: false">
+        <a-cursor id="cursor" color="white" raycaster="objects: .clickable"></a-cursor>
+        <!-- Anel extra para a cena 2 -->
+        <a-ring id="cursor-ring" visible="false" color="#87ceeb" radius-inner="0.02" radius-outer="0.03"
+          position="0 0 -1" scale="0.01 0.01 0.01"></a-ring>
+      </a-camera>
+    </a-entity>
+
+    <!-- ========================================== -->
+    <!-- GRUPO 1: MUSEU (SCENE 1)                   -->
+    <!-- ========================================== -->
+    <a-entity id="scene-museum" visible="true">
+      <!-- Iluminação do Museu -->
+      <a-light type="ambient" color="#fff" intensity="0.6"></a-light>
+      <a-light type="directional" color="#fff" intensity="0.8" position="5 10 5"></a-light>
+      <a-light type="point" intensity="0.5" position="-5 3 -5" color="#ffe8cc"></a-light>
+      <a-light type="point" intensity="0.5" position="5 3 -5" color="#ffe8cc"></a-light>
+      <a-light type="point" intensity="0.5" position="0 3 0" color="#ffe8cc"></a-light>
+
+      <!-- Ambiente -->
+      <a-plane rotation="-90 0 0" width="50" height="50" color="#8b6f47" roughness="0.6" metalness="0.1"
+        shadow></a-plane>
+      <!-- Detalhes do chão -->
+      <a-plane rotation="-90 0 0" width="18" height="18" position="0 0.01 -1" color="#a0826d" roughness="0.5"></a-plane>
+      <a-sky id="sky-museum" src="#skyTexture"></a-sky>
+      <!-- Teto -->
+      <a-plane rotation="90 0 0" width="22" height="22" position="0 5 -1" color="#f5f5dc" roughness="0.7"></a-plane>
+
+      <!-- Paredes -->
+      <a-box position="0 2.5 -10" width="20" height="5" depth="0.3" color="#e8dcc7" roughness="0.6" shadow></a-box>
+      <!-- Moldura parede frontal -->
+      <a-box position="0 4.8 -9.85" width="20" height="0.15" depth="0.1" color="#8b7355"></a-box>
+      <a-box position="0 0.1 -9.85" width="20" height="0.15" depth="0.1" color="#8b7355"></a-box>
+
+      <a-box position="-10 2.5 0" width="0.3" height="5" depth="20" color="#e8dcc7" roughness="0.6" shadow></a-box>
+      <!-- Moldura parede esquerda -->
+      <a-box position="-9.85 4.8 0" width="0.1" height="0.15" depth="20" color="#8b7355"></a-box>
+
+      <a-box position="10 2.5 0" width="0.3" height="5" depth="20" color="#e8dcc7" roughness="0.6" shadow></a-box>
+      <!-- Moldura parede direita -->
+      <a-box position="9.85 4.8 0" width="0.1" height="0.15" depth="20" color="#8b7355"></a-box>
+
+      <!-- Pinturas Decorativas -->
+      <a-entity id="paintings-container">
+        <!-- Quadro 1: ISS -->
+        <a-box position="-9.85 2.2 0" rotation="0 90 0" width="1.8" height="2.2" depth="0.1" color="#4a2c2a"
+          roughness="0.4"></a-box>
+        <a-box class="clickable painting" data-painting-pos="-7 0 -7" position="-9.79 2.2 0" width="1.5"
+          rotation="0 90 0" height="1.9" depth="0.05" src="/images/iss.jpg" roughness="0.8" metalness="0.5"></a-box>
+
+        <!-- Quadro 2: Hubble -->
+        <a-box position="-5 2.2 -9.85" width="1.8" height="2.2" depth="0.1" color="#1a4d6d" roughness="0.4"></a-box>
+        <a-box class="clickable painting" data-painting-pos="-3.5 0 -7" position="-5 2.2 -9.79" width="1.5" height="1.9"
+          depth="0.05" src="/images/hubble.jpg" roughness="0.8" metalness="0.5"></a-box>
+
+        <!-- Quadro 3: JWST -->
+        <a-box position="0 2.2 -9.85" width="1.8" height="2.2" depth="0.1" color="#8b5a00" roughness="0.4"></a-box>
+        <a-box class="clickable painting" data-painting-pos="0 0 -7" position="0 2.2 -9.79" width="1.5" height="1.9"
+          depth="0.05" src="/images/jwst.jpg" roughness="0.8" metalness="0.5"></a-box>
+        <!-- Quadro 4: saturnV -->
+        <a-box position="5 2.2 -9.85" width="1.8" height="2.2" depth="0.1" color="#1e5631" roughness="0.4"></a-box>
+        <a-box class="clickable painting" data-painting-pos="3.5 0 -7" position="5 2.2 -9.79" width="1.5" height="1.9"
+          depth="0.05" src="/images/saturnV.jpg" roughness="0.8" metalness="0.5"></a-box>
+
+        <!-- Quadro 5: Voyager -->
+        <a-box position="9.85 2.2 0" width="1.8" height="2.2" depth="0.1" color="#5b2c6f" rotation="0 90 0"
+          roughness="0.4"></a-box>
+        <a-box class="clickable painting" data-painting-pos="7 0 -7" position="9.79  2.2 0" width="1.5"
+          rotation="0 90 0" height="1.9" depth="0.05" src="/images/voyager.jpg" roughness="0.8" metalness="0.5"></a-box>
+      </a-entity>
+
+      <!-- Exibições (MANUALMENTE CRIADAS) -->
+      <a-entity id="exhibits-container">
+        <!-- Hubble -->
+        <a-entity position="-5 0 -5">
+          <a-box position="0 0.5 0" width="1.2" height="1" depth="1.2" color="#34495e" roughness="0.4" shadow></a-box>
+          <a-box position="0 1.05 0" width="1.25" height="0.1" depth="1.25" color="#2c3e50" roughness="0.3"></a-box>
+          <a-box position="0 1.2 0" width="1" height="0.15" depth="1" color="#5d6d7e" roughness="0.2"
+            metalness="0.3"></a-box>
+
+          <a-entity gltf-model="#hubble-model" position="0 2 0" scale="0.0003 0.0003 0.0003"
+            class="clickable exhibit-model" data-exhibit-id="hubble"
+            animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"></a-entity>
+
+          <a-plane position="0 0.2 0.61" width="1" height="0.3" color="#ecf0f1" roughness="0.4"></a-plane>
+          <a-text value="🔭 Hubble" position="0 0.2 0.61" align="center" anchor="center" color="#2c3e50"></a-text>
         </a-entity>
 
-        <!-- ========================================== -->
-        <!-- GRUPO 1: MUSEU (SCENE 1)                   -->
-        <!-- ========================================== -->
-        <a-entity id="scene-museum" visible="true">
-            <!-- Iluminação do Museu -->
-            <a-light type="ambient" color="#fff" intensity="0.6"></a-light>
-            <a-light type="directional" color="#fff" intensity="0.8" position="5 10 5"></a-light>
-            <a-light type="point" intensity="0.5" position="-5 3 -5" color="#ffe8cc"></a-light>
-            <a-light type="point" intensity="0.5" position="5 3 -5" color="#ffe8cc"></a-light>
-            <a-light type="point" intensity="0.5" position="0 3 0" color="#ffe8cc"></a-light>
+        <!-- JWST -->
+        <a-entity position="0 0 -5">
+          <a-box position="0 0.5 0" width="1.2" height="1" depth="1.2" color="#34495e" roughness="0.4" shadow></a-box>
+          <a-box position="0 1.05 0" width="1.25" height="0.1" depth="1.25" color="#2c3e50" roughness="0.3"></a-box>
+          <a-box position="0 1.2 0" width="1" height="0.15" depth="1" color="#5d6d7e" roughness="0.2"
+            metalness="0.3"></a-box>
 
-            <!-- Ambiente -->
-            <a-plane rotation="-90 0 0" width="50" height="50" color="#8b6f47" roughness="0.6" metalness="0.1"
-                shadow></a-plane>
-            <!-- Detalhes do chão -->
-            <a-plane rotation="-90 0 0" width="18" height="18" position="0 0.01 -1" color="#a0826d"
-                roughness="0.5"></a-plane>
-            <a-sky id="sky-museum" src="#skyTexture"></a-sky>
-            <!-- Teto -->
-            <a-plane rotation="90 0 0" width="22" height="22" position="0 5 -1" color="#f5f5dc"
-                roughness="0.7"></a-plane>
+          <a-entity gltf-model="#jwst-model" position="0 2 0" scale="0.05 0.05 0.05" class="clickable exhibit-model"
+            data-exhibit-id="jwst"
+            animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"></a-entity>
 
-            <!-- Paredes -->
-            <a-box position="0 2.5 -10" width="20" height="5" depth="0.3" color="#e8dcc7" roughness="0.6"
-                shadow></a-box>
-            <!-- Moldura parede frontal -->
-            <a-box position="0 4.8 -9.85" width="20" height="0.15" depth="0.1" color="#8b7355"></a-box>
-            <a-box position="0 0.1 -9.85" width="20" height="0.15" depth="0.1" color="#8b7355"></a-box>
+          <a-plane position="0 0.2 0.61" width="1" height="0.3" color="#ecf0f1" roughness="0.4"></a-plane>
+          <a-text value="JWST" position="0 0.2 0.61" align="center" anchor="center" color="#2c3e50"></a-text>
+        </a-entity>
 
-            <a-box position="-10 2.5 0" width="0.3" height="5" depth="20" color="#e8dcc7" roughness="0.6"
-                shadow></a-box>
-            <!-- Moldura parede esquerda -->
-            <a-box position="-9.85 4.8 0" width="0.1" height="0.15" depth="20" color="#8b7355"></a-box>
+        <!-- Saturn V -->
+        <a-entity position="5 0 -5">
+          <a-box position="0 0.5 0" width="1.2" height="1" depth="1.2" color="#34495e" roughness="0.4" shadow></a-box>
+          <a-box position="0 1.05 0" width="1.25" height="0.1" depth="1.25" color="#2c3e50" roughness="0.3"></a-box>
+          <a-box position="0 1.2 0" width="1" height="0.15" depth="1" color="#5d6d7e" roughness="0.2"
+            metalness="0.3"></a-box>
 
-            <a-box position="10 2.5 0" width="0.3" height="5" depth="20" color="#e8dcc7" roughness="0.6" shadow></a-box>
-            <!-- Moldura parede direita -->
-            <a-box position="9.85 4.8 0" width="0.1" height="0.15" depth="20" color="#8b7355"></a-box>
+          <a-entity gltf-model="#saturnv-model" position="0 2 0" scale="0.2 0.2 0.2" class="clickable exhibit-model"
+            data-exhibit-id="saturnv"
+            animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"></a-entity>
 
-            <!-- Pinturas Decorativas -->
-            <a-entity id="paintings-container">
-                <!-- Quadro 1: ISS -->
-                <a-box position="-9.85 2.2 0" rotation="0 90 0" width="1.8" height="2.2" depth="0.1" color="#4a2c2a"
-                    roughness="0.4"></a-box>
-                <a-box class="clickable painting" data-painting-pos="-7 0 -7" position="-9.79 2.2 0" width="1.5"
-                    rotation="0 90 0" height="1.9" depth="0.05" src="/images/iss.jpg" roughness="0.8"
-                    metalness="0.5"></a-box>
+          <a-plane position="0 0.2 0.61" width="1" height="0.3" color="#ecf0f1" roughness="0.4"></a-plane>
+          <a-text value="🚀 Saturn V" position="0 0.2 0.61" align="center" anchor="center" color="#2c3e50"></a-text>
+        </a-entity>
 
-                <!-- Quadro 2: Hubble -->
-                <a-box position="-5 2.2 -9.85" width="1.8" height="2.2" depth="0.1" color="#1a4d6d"
-                    roughness="0.4"></a-box>
-                <a-box class="clickable painting" data-painting-pos="-3.5 0 -7" position="-5 2.2 -9.79" width="1.5"
-                    height="1.9" depth="0.05" src="/images/hubble.jpg" roughness="0.8" metalness="0.5"></a-box>
+        <!-- ISS -->
+        <a-entity position="-5 0 0">
+          <a-box position="0 0.5 0" width="1.2" height="1" depth="1.2" color="#34495e" roughness="0.4" shadow></a-box>
+          <a-box position="0 1.05 0" width="1.25" height="0.1" depth="1.25" color="#2c3e50" roughness="0.3"></a-box>
+          <a-box position="0 1.2 0" width="1" height="0.15" depth="1" color="#5d6d7e" roughness="0.2"
+            metalness="0.3"></a-box>
 
-                <!-- Quadro 3: JWST -->
-                <a-box position="0 2.2 -9.85" width="1.8" height="2.2" depth="0.1" color="#8b5a00"
-                    roughness="0.4"></a-box>
-                <a-box class="clickable painting" data-painting-pos="0 0 -7" position="0 2.2 -9.79" width="1.5"
-                    height="1.9" depth="0.05" src="/images/jwst.jpg" roughness="0.8" metalness="0.5"></a-box>
-                <!-- Quadro 4: saturnV -->
-                <a-box position="5 2.2 -9.85" width="1.8" height="2.2" depth="0.1" color="#1e5631"
-                    roughness="0.4"></a-box>
-                <a-box class="clickable painting" data-painting-pos="3.5 0 -7" position="5 2.2 -9.79" width="1.5"
-                    height="1.9" depth="0.05" src="/images/saturnV.jpg" roughness="0.8" metalness="0.5"></a-box>
+          <a-entity gltf-model="#iss-model" position="0 2 0" scale="0.1 0.1 0.1" class="clickable exhibit-model"
+            data-exhibit-id="iss"
+            animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"></a-entity>
 
-                <!-- Quadro 5: Voyager -->
-                <a-box position="9.85 2.2 0" width="1.8" height="2.2" depth="0.1" color="#5b2c6f" rotation="0 90 0"
-                    roughness="0.4"></a-box>
-                <a-box class="clickable painting" data-painting-pos="7 0 -7" position="9.79  2.2 0" width="1.5"
-                    rotation="0 90 0" height="1.9" depth="0.05" src="/images/voyager.jpg" roughness="0.8"
-                    metalness="0.5"></a-box>
-            </a-entity>
+          <a-plane position="0.61 0.2 0" width="1" height="0.3" color="#ecf0f1" roughness="0.4"
+            rotation="0 90 0"></a-plane>
+          <a-text value="🌍 ISS" position="0.61 0.2 0" align="center" anchor="center" color="#2c3e50"
+            rotation="0 90 0"></a-text>
+        </a-entity>
 
-            <!-- Exibições (MANUALMENTE CRIADAS) -->
-            <a-entity id="exhibits-container">
-                <!-- Hubble -->
-                <a-entity position="-5 0 -5">
-                    <a-box position="0 0.5 0" width="1.2" height="1" depth="1.2" color="#34495e" roughness="0.4"
-                        shadow></a-box>
-                    <a-box position="0 1.05 0" width="1.25" height="0.1" depth="1.25" color="#2c3e50"
-                        roughness="0.3"></a-box>
-                    <a-box position="0 1.2 0" width="1" height="0.15" depth="1" color="#5d6d7e" roughness="0.2"
-                        metalness="0.3"></a-box>
+        <!-- Voyager -->
+        <a-entity position="5 0 0">
+          <a-box position="0 0.5 0" width="1.2" height="1" depth="1.2" color="#34495e" roughness="0.4" shadow></a-box>
+          <a-box position="0 1.05 0" width="1.25" height="0.1" depth="1.25" color="#2c3e50" roughness="0.3"></a-box>
+          <a-box position="0 1.2 0" width="1" height="0.15" depth="1" color="#5d6d7e" roughness="0.2"
+            metalness="0.3"></a-box>
 
-                    <a-entity gltf-model="#hubble-model" position="0 2 0" scale="0.0003 0.0003 0.0003"
-                        class="clickable exhibit-model" data-exhibit-id="hubble"
-                        animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"></a-entity>
+          <a-entity gltf-model="#voyager-model" position="0 2 0" scale="0.15 0.15 0.15" class="clickable exhibit-model"
+            data-exhibit-id="voyager" rotation="0 0 45"
+            animation="property: rotation; to: 0 0 405; loop: true; dur: 10000; easing: linear"></a-entity>
 
-                    <a-plane position="0 0.2 0.61" width="1" height="0.3" color="#ecf0f1" roughness="0.4"></a-plane>
-                    <a-text value="🔭 Hubble" position="0 0.2 0.61" align="center" anchor="center"
-                        color="#2c3e50"></a-text>
-                </a-entity>
+          <a-plane position="-0.61 0.2 0" width="1" height="0.3" color="#ecf0f1" roughness="0.4"
+            rotation="0 -90 0"></a-plane>
+          <a-text value="🛰️ Voyager" position="-0.61 0.2 0" align="center" anchor="center" color="#2c3e50"
+            rotation="0 -90 0"></a-text>
+        </a-entity>
+      </a-entity>
 
-                <!-- JWST -->
-                <a-entity position="0 0 -5">
-                    <a-box position="0 0.5 0" width="1.2" height="1" depth="1.2" color="#34495e" roughness="0.4"
-                        shadow></a-box>
-                    <a-box position="0 1.05 0" width="1.25" height="0.1" depth="1.25" color="#2c3e50"
-                        roughness="0.3"></a-box>
-                    <a-box position="0 1.2 0" width="1" height="0.15" depth="1" color="#5d6d7e" roughness="0.2"
-                        metalness="0.3"></a-box>
-
-                    <a-entity gltf-model="#jwst-model" position="0 2 0" scale="0.05 0.05 0.05"
-                        class="clickable exhibit-model" data-exhibit-id="jwst"
-                        animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"></a-entity>
-
-                    <a-plane position="0 0.2 0.61" width="1" height="0.3" color="#ecf0f1" roughness="0.4"></a-plane>
-                    <a-text value="JWST" position="0 0.2 0.61" align="center" anchor="center" color="#2c3e50"></a-text>
-                </a-entity>
-
-                <!-- Saturn V -->
-                <a-entity position="5 0 -5">
-                    <a-box position="0 0.5 0" width="1.2" height="1" depth="1.2" color="#34495e" roughness="0.4"
-                        shadow></a-box>
-                    <a-box position="0 1.05 0" width="1.25" height="0.1" depth="1.25" color="#2c3e50"
-                        roughness="0.3"></a-box>
-                    <a-box position="0 1.2 0" width="1" height="0.15" depth="1" color="#5d6d7e" roughness="0.2"
-                        metalness="0.3"></a-box>
-
-                    <a-entity gltf-model="#saturnv-model" position="0 2 0" scale="0.2 0.2 0.2"
-                        class="clickable exhibit-model" data-exhibit-id="saturnv"
-                        animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"></a-entity>
-
-                    <a-plane position="0 0.2 0.61" width="1" height="0.3" color="#ecf0f1" roughness="0.4"></a-plane>
-                    <a-text value="🚀 Saturn V" position="0 0.2 0.61" align="center" anchor="center"
-                        color="#2c3e50"></a-text>
-                </a-entity>
-
-                <!-- ISS -->
-                <a-entity position="-5 0 0">
-                    <a-box position="0 0.5 0" width="1.2" height="1" depth="1.2" color="#34495e" roughness="0.4"
-                        shadow></a-box>
-                    <a-box position="0 1.05 0" width="1.25" height="0.1" depth="1.25" color="#2c3e50"
-                        roughness="0.3"></a-box>
-                    <a-box position="0 1.2 0" width="1" height="0.15" depth="1" color="#5d6d7e" roughness="0.2"
-                        metalness="0.3"></a-box>
-
-                    <a-entity gltf-model="#iss-model" position="0 2 0" scale="0.1 0.1 0.1"
-                        class="clickable exhibit-model" data-exhibit-id="iss"
-                        animation="property: rotation; to: 0 360 0; loop: true; dur: 10000; easing: linear"></a-entity>
-
-                    <a-plane position="0.61 0.2 0" width="1" height="0.3" color="#ecf0f1" roughness="0.4"
-                        rotation="0 90 0"></a-plane>
-                    <a-text value="🌍 ISS" position="0.61 0.2 0" align="center" anchor="center" color="#2c3e50"
-                        rotation="0 90 0"></a-text>
-                </a-entity>
-
-                <!-- Voyager -->
-                <a-entity position="5 0 0">
-                    <a-box position="0 0.5 0" width="1.2" height="1" depth="1.2" color="#34495e" roughness="0.4"
-                        shadow></a-box>
-                    <a-box position="0 1.05 0" width="1.25" height="0.1" depth="1.25" color="#2c3e50"
-                        roughness="0.3"></a-box>
-                    <a-box position="0 1.2 0" width="1" height="0.15" depth="1" color="#5d6d7e" roughness="0.2"
-                        metalness="0.3"></a-box>
-
-                    <a-entity gltf-model="#voyager-model" position="0 2 0" scale="0.15 0.15 0.15"
-                        class="clickable exhibit-model" data-exhibit-id="voyager" rotation="0 0 45"
-                        animation="property: rotation; to: 0 0 405; loop: true; dur: 10000; easing: linear"></a-entity>
-
-                    <a-plane position="-0.61 0.2 0" width="1" height="0.3" color="#ecf0f1" roughness="0.4"
-                        rotation="0 -90 0"></a-plane>
-                    <a-text value="🛰️ Voyager" position="-0.61 0.2 0" align="center" anchor="center" color="#2c3e50"
-                        rotation="0 -90 0"></a-text>
-                </a-entity>
-            </a-entity>
-
-            <!-- Em Breve
+      <!-- Em Breve
             <a-entity position="5 0 0">
                 <a-box position="0 0.5 0" width="1.2" height="1" depth="1.2" color="#2c3e50" roughness="0.5"></a-box>
                 <a-box position="0 1.2 0" width="1" height="0.2" depth="1" color="#34495e" roughness="0.3"></a-box>
@@ -316,465 +295,463 @@
                 <a-text value="Em Breve" position="-0.61 0.2 0" align="center" anchor="center" color="#2c3e50"
                     rotation="0 -90 0"></a-text>
             </a-entity> -->
-        </a-entity>
+    </a-entity>
 
-        <!-- ========================================== -->
-        <!-- GRUPO 2: GALERIA DETALHE (SCENE 2)         -->
-        <!-- ========================================== -->
-        <a-entity id="scene-gallery" visible="false" position="100 0 0">
-            <!-- Afastado para evitar z-fighting de luzes -->
+    <!-- ========================================== -->
+    <!-- GRUPO 2: GALERIA DETALHE (SCENE 2)         -->
+    <!-- ========================================== -->
+    <a-entity id="scene-gallery" visible="false" position="0 0 0">
+      <!-- Afastado para evitar z-fighting de luzes -->
 
-            <!-- Iluminação Galeria -->
-            <a-light type="ambient" intensity="0.4" color="#ffffff"></a-light>
-            <a-light type="directional" intensity="0.4" position="3 4 3" color="#ffffff"></a-light>
-            <a-light type="point" intensity="0.4" position="-5 2.5 -3" color="#e0f0ff"></a-light>
-            <a-light type="point" intensity="0.4" position="5 2.5 -3" color="#e0f0ff"></a-light>
+      <!-- Iluminação Galeria -->
+      <a-light type="ambient" intensity="0.4" color="#ffffff"></a-light>
+      <a-light type="directional" intensity="0.4" position="3 4 3" color="#ffffff"></a-light>
+      <a-light type="point" intensity="0.4" position="-5 2.5 -3" color="#e0f0ff"></a-light>
+      <a-light type="point" intensity="0.4" position="5 2.5 -3" color="#e0f0ff"></a-light>
 
-            <!-- Ambiente Galeria -->
-            <a-sky color="#f0f8ff"></a-sky> <!-- Fundo branco gelo -->
-            <a-plane color="#e8f4f8" rotation="-90 0 0" width="18" height="16" position="0 0 0" shadow></a-plane>
-            <a-plane color="#d0e8f2" rotation="-90 0 0" width="8" height="8" position="0 0.01 0" shadow></a-plane>
-            <a-plane color="#f5f9fc" rotation="90 0 0" width="18" height="16" position="0 3.8 0"></a-plane>
-            <!-- Teto -->
+      <!-- Ambiente Galeria -->
+      <a-sky color="#f0f8ff"></a-sky> <!-- Fundo branco gelo -->
+      <a-plane color="#e8f4f8" rotation="-90 0 0" width="18" height="16" position="0 0 0" shadow></a-plane>
+      <a-plane color="#d0e8f2" rotation="-90 0 0" width="8" height="8" position="0 0.01 0" shadow></a-plane>
+      <a-plane color="#f5f9fc" rotation="90 0 0" width="18" height="16" position="0 3.8 0"></a-plane>
+      <!-- Teto -->
 
-            <!-- Estrutura Futurista (Paredes e Neon) -->
-            <a-plane color="#ffffff" width="18" height="3.8" position="0 1.9 -8"></a-plane>
-            <a-box color="#87ceeb" width="18" height="0.15" depth="0.1" position="0 3.7 -8.03"
-                emissive="#87ceeb"></a-box>
+      <!-- Estrutura Futurista (Paredes e Neon) -->
+      <a-plane color="#ffffff" width="18" height="3.8" position="0 1.9 -8"></a-plane>
+      <a-box color="#87ceeb" width="18" height="0.15" depth="0.1" position="0 3.7 -8.03" emissive="#87ceeb"></a-box>
 
-            <a-plane color="#f5f9fc" width="16" height="3.8" position="-9 1.9 0" rotation="0 90 0"></a-plane>
-            <a-box color="#87ceeb" width="16" height="0.1" depth="0.1" position="-9 3.75 0" rotation="0 90 0"
-                emissive="#87ceeb"></a-box>
+      <a-plane color="#f5f9fc" width="16" height="3.8" position="-9 1.9 0" rotation="0 90 0"></a-plane>
+      <a-box color="#87ceeb" width="16" height="0.1" depth="0.1" position="-9 3.75 0" rotation="0 90 0"
+        emissive="#87ceeb"></a-box>
 
-            <a-plane color="#f5f9fc" width="16" height="3.8" position="9 1.9 0" rotation="0 90 0"></a-plane>
-            <a-box color="#87ceeb" width="16" height="0.1" depth="0.1" position="9 3.75 0" rotation="0 90 0"
-                emissive="#87ceeb"></a-box>
+      <a-plane color="#f5f9fc" width="16" height="3.8" position="9 1.9 0" rotation="0 90 0"></a-plane>
+      <a-box color="#87ceeb" width="16" height="0.1" depth="0.1" position="9 3.75 0" rotation="0 90 0"
+        emissive="#87ceeb"></a-box>
 
-            <!-- Pedestal Central -->
-            <a-cylinder color="#e0e8f0" radius="0.85" height="0.5" position="0 0.0 -3" shadow></a-cylinder>
-            <a-cylinder color="#87ceeb" radius="0.9" height="0.12" position="0 0.5 -3" shadow
-                emissive="#87ceeb"></a-cylinder>
+      <!-- Pedestal Central -->
+      <a-cylinder color="#e0e8f0" radius="0.85" height="0.5" position="0 0.0 -3" shadow></a-cylinder>
+      <a-cylinder color="#87ceeb" radius="0.9" height="0.12" position="0 0.5 -3" shadow emissive="#87ceeb"></a-cylinder>
 
-            <!-- MODELO DINÂMICO (Será preenchido pelo JS) -->
-            <a-entity id="gallery-model-holder" position="0 1.2 -3">
-                <!-- Luz ambiente para iluminar o modelo 3D -->
-                <a-light type="ambient" color="#ffffff" intensity="0.8"></a-light>
-            </a-entity>
+      <!-- MODELO DINÂMICO (Será preenchido pelo JS) -->
+      <a-entity id="gallery-model-holder" position="0 1.2 -3">
+        <!-- Luz ambiente para iluminar o modelo 3D -->
+        <a-light type="ambient" color="#ffffff" intensity="0.8"></a-light>
+      </a-entity>
 
-            <!-- Título Principal da Galeria -->
-            <a-text id="gallery-main-title" value="" align="center" anchor="center" position="0 3 -7.8" color="#2c5f7f"
-                font-size="48" width="20" font-weight="bold"></a-text>
+      <!-- Título Principal da Galeria -->
+      <a-text id="gallery-main-title" value="" align="center" anchor="center" position="0 3 -7.8" color="#2c5f7f"
+        font-size="48" width="20" font-weight="bold"></a-text>
 
-            <!-- Colunas Futuristas -->
-            <a-cylinder color="#87ceeb" radius="0.15" height="3.5" position="-7.5 1.75 -7.5" shadow
-                emissive="#87ceeb"></a-cylinder>
-            <a-cylinder color="#87ceeb" radius="0.15" height="3.5" position="7.5 1.75 -7.5" shadow
-                emissive="#87ceeb"></a-cylinder>
-            <a-box color="#87ceeb" width="16" height="0.04" depth="0.04" position="0 2.5 -7.95" shadow
-                emissive="#87ceeb"></a-box>
+      <!-- Colunas Futuristas -->
+      <a-cylinder color="#87ceeb" radius="0.15" height="3.5" position="-7.5 1.75 -7.5" shadow
+        emissive="#87ceeb"></a-cylinder>
+      <a-cylinder color="#87ceeb" radius="0.15" height="3.5" position="7.5 1.75 -7.5" shadow
+        emissive="#87ceeb"></a-cylinder>
+      <a-box color="#87ceeb" width="16" height="0.04" depth="0.04" position="0 2.5 -7.95" shadow
+        emissive="#87ceeb"></a-box>
 
-            <!-- Painéis Estáticos da Galeria -->
-            <!-- Esquerda -->
-            <a-entity id="gallery-panel-historia" class="clickable gallery-panel" data-id="historia"
-                position="-6.8 2.3 -3" rotation="0 15 0">
-                <a-box color="#d8e9f3" width="2.8" height="2.3" depth="0.08" shadow></a-box>
-                <a-text value="HISTORIA" position="0 -1.4 0" align="center" color="#2c5f7f" font-size="20" width="7"
-                    font-weight="bold"></a-text>
-            </a-entity>
-            <a-entity id="gallery-panel-tecnologia" class="clickable gallery-panel" data-id="tecnologia"
-                position="-6.8 2.3 3" rotation="0 15 0">
-                <a-box color="#d8e9f3" width="2.8" height="2.3" depth="0.08" shadow></a-box>
-                <a-text value="TECNOLOGIA" position="0 -1.4 0" align="center" color="#2c5f7f" font-size="20" width="7"
-                    font-weight="bold"></a-text>
-            </a-entity>
+      <!-- Painéis Estáticos da Galeria -->
+      <!-- Esquerda -->
+      <a-entity id="gallery-panel-historia" class="clickable gallery-panel" data-id="historia" position="-6.8 2.3 -3"
+        rotation="0 15 0">
+        <a-box color="#d8e9f3" width="2.8" height="2.3" depth="0.08" shadow></a-box>
+        <a-text value="HISTORIA" position="0 -1.4 0" align="center" color="#2c5f7f" font-size="20" width="7"
+          font-weight="bold"></a-text>
+      </a-entity>
+      <a-entity id="gallery-panel-tecnologia" class="clickable gallery-panel" data-id="tecnologia" position="-6.8 2.3 3"
+        rotation="0 15 0">
+        <a-box color="#d8e9f3" width="2.8" height="2.3" depth="0.08" shadow></a-box>
+        <a-text value="TECNOLOGIA" position="0 -1.4 0" align="center" color="#2c5f7f" font-size="20" width="7"
+          font-weight="bold"></a-text>
+      </a-entity>
 
-            <!-- Direita -->
-            <a-entity id="gallery-panel-missoes" class="clickable gallery-panel" data-id="missoes" position="6.8 2.3 -3"
-                rotation="0 -15 0">
-                <a-box color="#d8e9f3" width="2.8" height="2.3" depth="0.08" shadow></a-box>
-                <a-text value="MISSOES" position="0 -1.4 0" align="center" color="#2c5f7f" font-size="20" width="7"
-                    font-weight="bold"></a-text>
-            </a-entity>
-            <a-entity id="gallery-panel-futuro" class="clickable gallery-panel" data-id="futuro" position="6.8 2.3 3"
-                rotation="0 -15 0">
-                <a-box color="#d8e9f3" width="2.8" height="2.3" depth="0.08" shadow></a-box>
-                <a-text value="FUTURO" position="0 -1.4 0" align="center" color="#2c5f7f" font-size="20" width="7"
-                    font-weight="bold"></a-text>
-            </a-entity>
+      <!-- Direita -->
+      <a-entity id="gallery-panel-missoes" class="clickable gallery-panel" data-id="missoes" position="6.8 2.3 -3"
+        rotation="0 -15 0">
+        <a-box color="#d8e9f3" width="2.8" height="2.3" depth="0.08" shadow></a-box>
+        <a-text value="MISSOES" position="0 -1.4 0" align="center" color="#2c5f7f" font-size="20" width="7"
+          font-weight="bold"></a-text>
+      </a-entity>
+      <a-entity id="gallery-panel-futuro" class="clickable gallery-panel" data-id="futuro" position="6.8 2.3 3"
+        rotation="0 -15 0">
+        <a-box color="#d8e9f3" width="2.8" height="2.3" depth="0.08" shadow></a-box>
+        <a-text value="FUTURO" position="0 -1.4 0" align="center" color="#2c5f7f" font-size="20" width="7"
+          font-weight="bold"></a-text>
+      </a-entity>
 
 
-        </a-entity>
+    </a-entity>
 
-        <!-- ========================================== -->
-        <!-- GRUPO 3: VISUALIZADOR 3D (SCENE 3)         -->
-        <!-- ========================================== -->
-        <a-entity id="scene-viewer" visible="false" position="0 0 0">
-            <!-- Iluminação Visualizador -->
-            <a-light type="ambient" intensity="0.7" color="#ffffff"></a-light>
-            <a-light type="directional" intensity="0.8" position="5 5 5" color="#ffffff"></a-light>
-            <a-light type="point" intensity="0.6" position="-5 3 -5" color="#e0f0ff"></a-light>
-            <a-light type="point" intensity="0.6" position="5 3 -5" color="#e0f0ff"></a-light>
-            <a-light type="point" intensity="0.6" position="0 3 5" color="#e0f0ff"></a-light>
+    <!-- ========================================== -->
+    <!-- GRUPO 3: VISUALIZADOR 3D (SCENE 3)         -->
+    <!-- ========================================== -->
+    <a-entity id="scene-viewer" visible="false" position="0 0 0">
+      <!-- Iluminação Visualizador -->
+      <a-light type="ambient" intensity="0.7" color="#ffffff"></a-light>
+      <a-light type="directional" intensity="0.8" position="5 5 5" color="#ffffff"></a-light>
+      <a-light type="point" intensity="0.6" position="-5 3 -5" color="#e0f0ff"></a-light>
+      <a-light type="point" intensity="0.6" position="5 3 -5" color="#e0f0ff"></a-light>
+      <a-light type="point" intensity="0.6" position="0 3 5" color="#e0f0ff"></a-light>
 
-            <!-- Fundo Gradiente (Sky) -->
-            <a-sky color="#1a1a2e"></a-sky>
+      <!-- Fundo Gradiente (Sky) -->
+      <a-sky color="#1a1a2e"></a-sky>
 
-            <!-- Piso Reflexivo -->
-            <a-plane rotation="-90 0 0" width="30" height="30" color="#16213e" roughness="0.3" metalness="0.5"
-                shadow></a-plane>
+      <!-- Piso Reflexivo -->
+      <a-plane rotation="-90 0 0" width="30" height="30" color="#16213e" roughness="0.3" metalness="0.5"
+        shadow></a-plane>
 
-            <!-- MODELO DINÂMICO (Centro) -->
-            <a-entity id="viewer-model-holder" position="0 1.5 -2">
-                <a-light type="ambient" color="#ffffff" intensity="1"></a-light>
-            </a-entity>
+      <!-- MODELO DINÂMICO (Centro) -->
+      <a-entity id="viewer-model-holder" position="0 1.5 -2">
+        <a-light type="ambient" color="#ffffff" intensity="1"></a-light>
+      </a-entity>
 
-            <a-entity id="viewer-target" position="0 1.5 -2"></a-entity>
+      <a-entity id="viewer-target" position="0 1.5 -2"></a-entity>
 
 
-            <!-- Informações do Modelo -->
-            <a-text id="viewer-model-title" value="" position="0 4 -5" align="center" anchor="center" color="#87ceeb"
-                font-size="48" font-weight="bold" width="20"></a-text>
+      <!-- Informações do Modelo -->
+      <a-text id="viewer-model-title" value="" position="0 4 -5" align="center" anchor="center" color="#87ceeb"
+        font-size="48" font-weight="bold" width="20"></a-text>
 
-            <!-- Instruções -->
-            <a-text value="Arraste para rotacionar | Clique em VOLTAR para sair" position="0 -4 -5" align="center"
-                anchor="center" color="#cccccc" font-size="20" width="18" line-height="60"></a-text>
-        </a-entity>
+      <!-- Instruções -->
+      <a-text value="Arraste para rotacionar | Clique em VOLTAR para sair" position="0 -4 -5" align="center"
+        anchor="center" color="#cccccc" font-size="20" width="18" line-height="60"></a-text>
+    </a-entity>
 
-    </a-scene>
+  </a-scene>
 
-    <script>
-        // ==========================================
-        // DADOS
-        // ==========================================
-        const exhibitsData = [
-            {
-                id: 'hubble',
-                pos: '-5 0 -5',
-                model: '/models/hubble.glb',
-                scale: '0.0003 0.0003 0.0003',
-                label: '🔭 Hubble',
-                labelPos: '0 0.2 0.61',
-                labelRot: '0 0 0',
-                title: 'Hubble Space Telescope',
-                desc: 'O telescópio espacial Hubble revolucionou nossa visão do universo.',
-                duration: 10000,
-            },
-            {
-                id: 'jwst',
-                pos: '0 0 -5',
-                model: '/models/jwst_james_webb_space_telescope.glb',
-                scale: '0.05 0.05 0.05',
-                label: 'JWST',
-                labelPos: '0 0.2 0.61',
-                labelRot: '0 0 0',
-                title: 'James Webb Space Telescope',
-                desc: 'O telescópio espacial mais avançado, observando o universo em infravermelho.',
-                duration: 10000,
-            },
-            {
-                id: 'saturnv',
-                pos: '5 0 -5',
-                model: '/models/saturnVCorrect.glb',
-                scale: '0.2 0.2 0.2',
-                label: '🚀 Saturn V',
-                labelPos: '0 0.2 0.61',
-                labelRot: '0 0 0',
-                title: 'Saturn V Rocket',
-                desc: 'O foguete mais poderoso já construído, levou os astronautas à Lua.',
-                duration: 10000,
-            },
-            {
-                id: 'iss',
-                pos: '-5 0 0',
-                model: '/models/ISS_Correct.glb',
-                scale: '0.1 0.1 0.1',
-                label: '🌍 ISS',
-                labelPos: '0.61 0.2 0',
-                labelRot: '0 90 0',
-                title: 'International Space Station',
-                desc: 'Laboratório orbital onde astronautas de vários países trabalham.',
-                duration: 10000,
-            },
-            {
-                id: 'voyager',
-                pos: '5 0 0',
-                model: '/models/voyager.glb',
-                scale: '0.15 0.15 0.15',
-                rotation: '0 0 45',
-                label: '🛰️ Voyager',
-                labelPos: '-0.61 0.2 0',
-                labelRot: '0 -90 0',
-                title: 'Sonda Voyager',
-                desc: 'Sondas que exploraram os planetas exteriores e agora estão no espaço interestelar.',
-                duration: 10000,
-            }
-        ];
+  <script>
+    // ==========================================
+    // DADOS
+    // ==========================================
+    const exhibitsData = [
+      {
+        id: 'hubble',
+        pos: '-5 0 -5',
+        model: '/models/hubble.glb',
+        scale: '0.0003 0.0003 0.0003',
+        label: '🔭 Hubble',
+        labelPos: '0 0.2 0.61',
+        labelRot: '0 0 0',
+        title: 'Hubble Space Telescope',
+        desc: 'O telescópio espacial Hubble revolucionou nossa visão do universo.',
+        duration: 10000,
+      },
+      {
+        id: 'jwst',
+        pos: '0 0 -5',
+        model: '/models/jwst_james_webb_space_telescope.glb',
+        scale: '0.05 0.05 0.05',
+        label: 'JWST',
+        labelPos: '0 0.2 0.61',
+        labelRot: '0 0 0',
+        title: 'James Webb Space Telescope',
+        desc: 'O telescópio espacial mais avançado, observando o universo em infravermelho.',
+        duration: 10000,
+      },
+      {
+        id: 'saturnv',
+        pos: '5 0 -5',
+        model: '/models/saturnVCorrect.glb',
+        scale: '0.2 0.2 0.2',
+        label: '🚀 Saturn V',
+        labelPos: '0 0.2 0.61',
+        labelRot: '0 0 0',
+        title: 'Saturn V Rocket',
+        desc: 'O foguete mais poderoso já construído, levou os astronautas à Lua.',
+        duration: 10000,
+      },
+      {
+        id: 'iss',
+        pos: '-5 0 0',
+        model: '/models/ISS_Correct.glb',
+        scale: '0.1 0.1 0.1',
+        label: '🌍 ISS',
+        labelPos: '0.61 0.2 0',
+        labelRot: '0 90 0',
+        title: 'International Space Station',
+        desc: 'Laboratório orbital onde astronautas de vários países trabalham.',
+        duration: 10000,
+      },
+      {
+        id: 'voyager',
+        pos: '5 0 0',
+        model: '/models/voyager.glb',
+        scale: '0.15 0.15 0.15',
+        rotation: '0 0 45',
+        label: '🛰️ Voyager',
+        labelPos: '-0.61 0.2 0',
+        labelRot: '0 -90 0',
+        title: 'Sonda Voyager',
+        desc: 'Sondas que exploraram os planetas exteriores e agora estão no espaço interestelar.',
+        duration: 10000,
+      }
+    ];
 
-        const galleryInfoData = {
-            'historia': { title: 'História', desc: 'Uma jornada através dos marcos mais importantes da exploração humana do espaço.' },
-            'tecnologia': { title: 'Tecnologia', desc: 'Descubra as inovações tecnológicas que tornaram possível alcançar as estrelas.' },
-            'missoes': { title: 'Missões', desc: 'Conheça as missões que mudaram nossa compreensão do universo.' },
-            'futuro': { title: 'Futuro', desc: 'Explore as possibilidades e desafios da próxima era de descobertas.' }
-        };
+    const galleryInfoData = {
+      'historia': { title: 'História', desc: 'Uma jornada através dos marcos mais importantes da exploração humana do espaço.' },
+      'tecnologia': { title: 'Tecnologia', desc: 'Descubra as inovações tecnológicas que tornaram possível alcançar as estrelas.' },
+      'missoes': { title: 'Missões', desc: 'Conheça as missões que mudaram nossa compreensão do universo.' },
+      'futuro': { title: 'Futuro', desc: 'Explore as possibilidades e desafios da próxima era de descobertas.' }
+    };
 
-        // Estado Global
-        let currentScene = 'museum';
-        let selectedExhibitData = null;
-        let activeInfoItem = null;
+    // Estado Global
+    let currentScene = 'museum';
+    let selectedExhibitData = null;
+    let activeInfoItem = null;
 
-        // Elementos DOM
-        const infoPanel = document.getElementById('info-panel');
-        const panelTitle = document.getElementById('panel-title');
-        const panelDesc = document.getElementById('panel-desc');
-        const closeBtn = document.getElementById('close-btn');
-        const actionBtn = document.getElementById('action-btn');
-        const cursor = document.getElementById('cursor');
-        const btnVoltar = document.getElementById('btn-voltar');
-        const camera = document.querySelector('a-camera');
+    // Elementos DOM
+    const infoPanel = document.getElementById('info-panel');
+    const panelTitle = document.getElementById('panel-title');
+    const panelDesc = document.getElementById('panel-desc');
+    const closeBtn = document.getElementById('close-btn');
+    const actionBtn = document.getElementById('action-btn');
+    const cursor = document.getElementById('cursor');
+    const btnVoltar = document.getElementById('btn-voltar');
+    const camera = document.querySelector('a-camera');
 
-        // ==========================================
-        // INICIALIZAÇÃO
-        // ==========================================
-        document.addEventListener('DOMContentLoaded', () => {
-            setupUIInteractions();
-            setupGalleryInteractions();
-            setupMuseumExhibits();
+    // ==========================================
+    // INICIALIZAÇÃO
+    // ==========================================
+    document.addEventListener('DOMContentLoaded', () => {
+      setupUIInteractions();
+      setupGalleryInteractions();
+      setupMuseumExhibits();
+    });
+
+    // ==========================================
+    // FUNÇÕES DE CRIAÇÃO (MUSEU)
+    // ==========================================
+    function setupMuseumExhibits() {
+      // Apenas configura event listeners nos modelos já presentes no HTML
+      const models = document.querySelectorAll('.exhibit-model');
+
+      models.forEach(modelEl => {
+        const exhibitId = modelEl.getAttribute('data-exhibit-id');
+        const exhibit = exhibitsData.find(e => e.id === exhibitId);
+
+        if (!exhibit) return;
+
+        modelEl.addEventListener('mouseenter', () => {
+          cursor.setAttribute('color', 'green');
+          const [x, y, z] = exhibit.scale.split(' ').map(parseFloat);
+          modelEl.setAttribute('scale', `${x * 1.1} ${y * 1.1} ${z * 1.1}`);
         });
 
-        // ==========================================
-        // FUNÇÕES DE CRIAÇÃO (MUSEU)
-        // ==========================================
-        function setupMuseumExhibits() {
-            // Apenas configura event listeners nos modelos já presentes no HTML
-            const models = document.querySelectorAll('.exhibit-model');
+        modelEl.addEventListener('mouseleave', () => {
+          cursor.setAttribute('color', 'white');
+          modelEl.setAttribute('scale', exhibit.scale);
+        });
 
-            models.forEach(modelEl => {
-                const exhibitId = modelEl.getAttribute('data-exhibit-id');
-                const exhibit = exhibitsData.find(e => e.id === exhibitId);
+        modelEl.addEventListener('click', () => {
+          showInfoPanel(exhibit, 'museum');
+        });
+      });
+    }
 
-                if (!exhibit) return;
+    // ==========================================
+    // UI & LÓGICA DE TROCA
+    // ==========================================
+    function showInfoPanel(data, context) {
+      activeInfoItem = data;
 
-                modelEl.addEventListener('mouseenter', () => {
-                    cursor.setAttribute('color', 'green');
-                    const [x, y, z] = exhibit.scale.split(' ').map(parseFloat);
-                    modelEl.setAttribute('scale', `${x * 1.1} ${y * 1.1} ${z * 1.1}`);
-                });
+      // Preencher HTML
+      panelTitle.textContent = data.title;
+      panelDesc.textContent = data.desc;
+      infoPanel.style.display = 'block';
 
-                modelEl.addEventListener('mouseleave', () => {
-                    cursor.setAttribute('color', 'white');
-                    modelEl.setAttribute('scale', exhibit.scale);
-                });
+      if (context === 'museum') {
+        // Modo Museu
+        infoPanel.className = '';
+        actionBtn.textContent = 'Ver em 3D';
+        actionBtn.onclick = () => switchToGallery(data);
+        actionBtn.style.display = 'block';
+      } else {
+        // Modo Galeria (Painéis estáticos)
+        infoPanel.className = 'theme-dark';
+        actionBtn.textContent = 'Saber Mais';
+        actionBtn.onclick = () => alert('Funcionalidade extra aqui!');
+      }
+    }
+    function setupUIInteractions() {
+      closeBtn.addEventListener('click', () => {
+        infoPanel.style.display = 'none';
+        activeInfoItem = null;
+      });
 
-                modelEl.addEventListener('click', () => {
-                    showInfoPanel(exhibit, 'museum');
-                });
-            });
-        }
+      // Botão Voltar HTML
+      btnVoltar.addEventListener('click', switchToMuseum);
+    }
 
-        // ==========================================
-        // UI & LÓGICA DE TROCA
-        // ==========================================
-        function showInfoPanel(data, context) {
-            activeInfoItem = data;
+    // ==========================================
+    // LÓGICA DE TRANSIÇÃO DE CENAS
+    // ==========================================
+    // ...existing code...
+    function switchToGallery(exhibitData) {
+      selectedExhibitData = exhibitData;
+      infoPanel.style.display = 'none'; // Fecha o painel
 
-            // Preencher HTML
-            panelTitle.textContent = data.title;
-            panelDesc.textContent = data.desc;
-            infoPanel.style.display = 'block';
+      // 1. Troca Visibilidade dos Grupos
+      document.getElementById('scene-museum').setAttribute('visible', 'false');
 
-            if (context === 'museum') {
-                // Modo Museu
-                infoPanel.className = '';
-                actionBtn.textContent = 'Ver em 3D';
-                actionBtn.onclick = () => switchToGallery(data);
-                actionBtn.style.display = 'block';
-            } else {
-                // Modo Galeria (Painéis estáticos)
-                infoPanel.className = 'theme-dark';
-                actionBtn.textContent = 'Saber Mais';
-                actionBtn.onclick = () => alert('Funcionalidade extra aqui!');
-            }
-        }
-        function setupUIInteractions() {
-            closeBtn.addEventListener('click', () => {
-                infoPanel.style.display = 'none';
-                activeInfoItem = null;
-            });
+      const galleryScene = document.getElementById('scene-gallery');
+      galleryScene.setAttribute('visible', 'true');
 
-            // Botão Voltar HTML
-            btnVoltar.addEventListener('click', switchToMuseum);
-        }
+      // Mover a câmera/rig para a posição da galeria (offset de 0 em X)
+      const rig = document.getElementById('rig');
+      rig.setAttribute('position', '0 0 0');
+      rig.setAttribute('rotation', '0 0 0');
 
-        // ==========================================
-        // LÓGICA DE TRANSIÇÃO DE CENAS
-        // ==========================================
-        // ...existing code...
-        function switchToGallery(exhibitData) {
-            selectedExhibitData = exhibitData;
-            infoPanel.style.display = 'none'; // Fecha o painel
+      // Resetar rotação da câmera através do componente look-controls
+      const cameraEl = camera;
+      cameraEl.setAttribute('rotation', '0 0 0');
 
-            // 1. Troca Visibilidade dos Grupos
-            document.getElementById('scene-museum').setAttribute('visible', 'false');
+      // Forçar reset do look-controls
+      if (cameraEl.components['look-controls']) {
+        cameraEl.components['look-controls'].pitchObject.rotation.x = 0;
+        cameraEl.components['look-controls'].yawObject.rotation.y = 0;
+      }
 
-            const galleryScene = document.getElementById('scene-gallery');
-            galleryScene.setAttribute('visible', 'true');
+      // 2. Configura o Modelo na Galeria
+      const holder = document.getElementById('gallery-model-holder');
+      holder.innerHTML = ''; // Limpa anterior
 
-            // Mover a câmera/rig para a posição da galeria (offset de 100 em X)
-            const rig = document.getElementById('rig');
-            rig.setAttribute('position', '100 0 0');
-            rig.setAttribute('rotation', '0 0 0');
+      const modelEl = document.createElement('a-entity');
+      // Mapeia modelo para asset ID
+      const assetMap = {
+        '/models/hubble.glb': '#hubble-model',
+        '/models/jwst_james_webb_space_telescope.glb': '#jwst-model',
+        '/models/saturnVCorrect.glb': '#saturnv-model',
+        '/models/ISS_Correct.glb': '#iss-model',
+        '/models/voyager.glb': '#voyager-model'
+      };
+      modelEl.setAttribute('gltf-model', assetMap[exhibitData.model] || exhibitData.model);
 
-            // Resetar rotação da câmera através do componente look-controls
-            const cameraEl = camera;
-            cameraEl.setAttribute('rotation', '0 0 0');
+      // Usa a escala original ou ajusta se necessário
+      modelEl.setAttribute('scale', exhibitData.scale);
+      modelEl.setAttribute('animation', `property: rotation; to: 0 360 0; loop: true; dur: ${exhibitData.duration}; easing: linear`);
+      modelEl.setAttribute('shadow', '');
+      modelEl.setAttribute('class', 'clickable');
 
-            // Forçar reset do look-controls
-            if (cameraEl.components['look-controls']) {
-                cameraEl.components['look-controls'].pitchObject.rotation.x = 0;
-                cameraEl.components['look-controls'].yawObject.rotation.y = 0;
-            }
+      // NOVO: Clique para abrir visualizador 3D
+      modelEl.addEventListener('click', () => {
+        switchToViewer(exhibitData);
+      });
 
-            // 2. Configura o Modelo na Galeria
-            const holder = document.getElementById('gallery-model-holder');
-            holder.innerHTML = ''; // Limpa anterior
+      holder.appendChild(modelEl);
 
-            const modelEl = document.createElement('a-entity');
-            // Mapeia modelo para asset ID
-            const assetMap = {
-                '/models/hubble.glb': '#hubble-model',
-                '/models/jwst_james_webb_space_telescope.glb': '#jwst-model',
-                '/models/saturnVCorrect.glb': '#saturnv-model',
-                '/models/ISS_Correct.glb': '#iss-model',
-                '/models/voyager.glb': '#voyager-model'
-            };
-            modelEl.setAttribute('gltf-model', assetMap[exhibitData.model] || exhibitData.model);
+      // 3. Atualiza Título
+      document.getElementById('gallery-main-title').setAttribute('value', exhibitData.title);
 
-            // Usa a escala original ou ajusta se necessário
-            modelEl.setAttribute('scale', exhibitData.scale);
-            modelEl.setAttribute('animation', `property: rotation; to: 0 360 0; loop: true; dur: ${exhibitData.duration}; easing: linear`);
-            modelEl.setAttribute('shadow', '');
-            modelEl.setAttribute('class', 'clickable');
+      // 4. Cursor Estilo Galeria
+      document.getElementById('cursor-ring').setAttribute('visible', 'true');
 
-            // NOVO: Clique para abrir visualizador 3D
-            modelEl.addEventListener('click', () => {
-                switchToViewer(exhibitData);
-            });
+      // 5. Mostra botão voltar HTML
+      btnVoltar.style.display = 'block';
 
-            holder.appendChild(modelEl);
+      currentScene = 'detail';
+    }
 
-            // 3. Atualiza Título
-            document.getElementById('gallery-main-title').setAttribute('value', exhibitData.title);
+    // ==========================================
+    // NOVO: TRANSIÇÃO PARA VISUALIZADOR 3D (SIMPLIFICADO)
+    // ==========================================
+    function switchToViewer(exhibitData) {
+      selectedExhibitData = exhibitData;
+      infoPanel.style.display = 'none';
+      btnVoltar.style.display = 'block';
 
-            // 4. Cursor Estilo Galeria
-            document.getElementById('cursor-ring').setAttribute('visible', 'true');
+      // 1. Troca Visibilidade
+      document.getElementById('scene-gallery').setAttribute('visible', 'false');
+      document.getElementById('scene-viewer').setAttribute('visible', 'true');
 
-            // 5. Mostra botão voltar HTML
-            btnVoltar.style.display = 'block';
+      // 2. Move câmera para cena 3 e configura orbit-controls
+      const rig = document.getElementById('rig');
+      rig.setAttribute('position', '0 0 0');
+      rig.setAttribute('rotation', '0 0 0');
 
-            currentScene = 'detail';
-        }
+      const cameraEl = camera;
+      // Remove look-controls completamente
+      cameraEl.removeAttribute('look-controls');
+      // Configura orbit-controls com parâmetros corretos
+      cameraEl.setAttribute('orbit-controls', 'target: 0 1.5 -2; minDistance: 3; maxDistance: 20; rotateSpeed: 0.005; initialPosition: -5 4 5;');
 
-        // ==========================================
-        // NOVO: TRANSIÇÃO PARA VISUALIZADOR 3D (SIMPLIFICADO)
-        // ==========================================
-        function switchToViewer(exhibitData) {
-            selectedExhibitData = exhibitData;
-            infoPanel.style.display = 'none';
-            btnVoltar.style.display = 'block';
+      // 3. Carrega modelo no visualizador
+      const viewerHolder = document.getElementById('viewer-model-holder');
+      viewerHolder.innerHTML = '';
 
-            // 1. Troca Visibilidade
-            document.getElementById('scene-gallery').setAttribute('visible', 'false');
-            document.getElementById('scene-viewer').setAttribute('visible', 'true');
+      const modelEl = document.createElement('a-entity');
+      // Mapeia modelo para asset ID
+      const assetMap = {
+        '/models/hubble.glb': '#hubble-model',
+        '/models/jwst_james_webb_space_telescope.glb': '#jwst-model',
+        '/models/saturnVCorrect.glb': '#saturnv-model',
+        '/models/ISS_Correct.glb': '#iss-model',
+        '/models/voyager.glb': '#voyager-model'
+      };
+      modelEl.setAttribute('gltf-model', assetMap[exhibitData.model] || exhibitData.model);
+      modelEl.setAttribute('scale', exhibitData.scale);
+      modelEl.setAttribute('rotation', exhibitData.rotation || '0 0 0');
+      modelEl.setAttribute('shadow', '');
 
-            // 2. Move câmera para cena 3 e configura orbit-controls
-            const rig = document.getElementById('rig');
-            rig.setAttribute('position', '0 0 0');
-            rig.setAttribute('rotation', '0 0 0');
+      viewerHolder.appendChild(modelEl);
 
-            const cameraEl = camera;
-            // Remove look-controls completamente
-            cameraEl.removeAttribute('look-controls');
-            // Configura orbit-controls com parâmetros corretos
-            cameraEl.setAttribute('orbit-controls', 'target: 0 1.5 -2; minDistance: 3; maxDistance: 20; rotateSpeed: 0.005; initialPosition: -5 4 5;');
+      // 4. Atualiza título
+      document.getElementById('viewer-model-title').setAttribute('value', exhibitData.title);
 
-            // 3. Carrega modelo no visualizador
-            const viewerHolder = document.getElementById('viewer-model-holder');
-            viewerHolder.innerHTML = '';
-
-            const modelEl = document.createElement('a-entity');
-            // Mapeia modelo para asset ID
-            const assetMap = {
-                '/models/hubble.glb': '#hubble-model',
-                '/models/jwst_james_webb_space_telescope.glb': '#jwst-model',
-                '/models/saturnVCorrect.glb': '#saturnv-model',
-                '/models/ISS_Correct.glb': '#iss-model',
-                '/models/voyager.glb': '#voyager-model'
-            };
-            modelEl.setAttribute('gltf-model', assetMap[exhibitData.model] || exhibitData.model);
-            modelEl.setAttribute('scale', exhibitData.scale);
-            modelEl.setAttribute('rotation', exhibitData.rotation || '0 0 0');
-            modelEl.setAttribute('shadow', '');
-
-            viewerHolder.appendChild(modelEl);
-
-            // 4. Atualiza título
-            document.getElementById('viewer-model-title').setAttribute('value', exhibitData.title);
-
-            currentScene = 'viewer';
-        }
+      currentScene = 'viewer';
+    }
 
 
 
 
-        function switchToMuseum() {
-            infoPanel.style.display = 'none';
-            selectedExhibitData = null;
+    function switchToMuseum() {
+      infoPanel.style.display = 'none';
+      selectedExhibitData = null;
 
-            // 1. Troca Visibilidade
-            document.getElementById('scene-gallery').setAttribute('visible', 'false');
-            document.getElementById('scene-viewer').setAttribute('visible', 'false');
-            document.getElementById('scene-museum').setAttribute('visible', 'true');
+      // 1. Troca Visibilidade
+      document.getElementById('scene-gallery').setAttribute('visible', 'false');
+      document.getElementById('scene-viewer').setAttribute('visible', 'false');
+      document.getElementById('scene-museum').setAttribute('visible', 'true');
 
-            // 2. Reseta câmera: Remove orbit-controls e reativa look-controls
-            const rig = document.getElementById('rig');
-            rig.setAttribute('position', '0 0 0');
-            rig.setAttribute('rotation', '0 0 0');
+      // 2. Reseta câmera: Remove orbit-controls e reativa look-controls
+      const rig = document.getElementById('rig');
+      rig.setAttribute('position', '0 0 0');
+      rig.setAttribute('rotation', '0 0 0');
 
-            const cameraEl = camera;
-            cameraEl.setAttribute('rotation', '0 0 0');
-            cameraEl.setAttribute('orbit-controls', '');
-            cameraEl.setAttribute('look-controls', 'enabled: true');
+      const cameraEl = camera;
+      cameraEl.setAttribute('rotation', '0 0 0');
+      cameraEl.setAttribute('orbit-controls', '');
+      cameraEl.setAttribute('look-controls', 'enabled: true');
 
-            // 3. Reseta Cursor
-            document.getElementById('cursor-ring').setAttribute('visible', 'false');
+      // 3. Reseta Cursor
+      document.getElementById('cursor-ring').setAttribute('visible', 'false');
 
-            // 4. Esconde botão voltar HTML
-            btnVoltar.style.display = 'none';
+      // 4. Esconde botão voltar HTML
+      btnVoltar.style.display = 'none';
 
-            currentScene = 'museum';
-        }
+      currentScene = 'museum';
+    }
 
-        function setupGalleryInteractions() {
-            // Configurar painéis informativos da galeria
-            const panels = document.querySelectorAll('.gallery-panel');
-            panels.forEach(panel => {
-                panel.addEventListener('mouseenter', () => cursor.setAttribute('color', '#87ceeb'));
-                panel.addEventListener('mouseleave', () => cursor.setAttribute('color', 'white'));
+    function setupGalleryInteractions() {
+      // Configurar painéis informativos da galeria
+      const panels = document.querySelectorAll('.gallery-panel');
+      panels.forEach(panel => {
+        panel.addEventListener('mouseenter', () => cursor.setAttribute('color', '#87ceeb'));
+        panel.addEventListener('mouseleave', () => cursor.setAttribute('color', 'white'));
 
-                panel.addEventListener('click', (e) => {
-                    // Pega o ID (historia, tecnologia, etc)
-                    // Como o click pode vir do filho (box/text), pegamos o closest
-                    const target = e.target.closest('.gallery-panel');
-                    const id = target.getAttribute('data-id');
+        panel.addEventListener('click', (e) => {
+          // Pega o ID (historia, tecnologia, etc)
+          // Como o click pode vir do filho (box/text), pegamos o closest
+          const target = e.target.closest('.gallery-panel');
+          const id = target.getAttribute('data-id');
 
-                    if (galleryInfoData[id]) {
-                        showInfoPanel(galleryInfoData[id], 'gallery');
-                    }
-                });
-            });
-        }
+          if (galleryInfoData[id]) {
+            showInfoPanel(galleryInfoData[id], 'gallery');
+          }
+        });
+      });
+    }
 
-    </script>
+  </script>
 </body>
 
 </html>

@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Museu Espacial VR</title>
+    <script src="https://aframe.io/releases/1.4.0/aframe.min.js"></script>
+    <script src="https://unpkg.com/aframe-orbit-controls@1.3.2/dist/aframe-orbit-controls.min.js"></script>
+    <script src="sceneManager.js"></script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            transition: opacity 0.8s ease-in-out;
+            opacity: 0;
+            /* Começa invisível para o fade-in do load */
+            background-color: black;
+            /* Fundo preto ajuda na transição */
+        }
+    </style>
+</head>
+
+<body>
+    <h1 id="cena-titulo">Cena 2</h1>
+
+    <a-scene id="scene02" shadow="type: pcfs">
+
+        <a-camera position="0 1.6 0">
+            <a-cursor></a-cursor>
+        </a-camera>
+
+        <!-- Iluminação Galeria -->
+        <a-light type="ambient" intensity="0.2" color="#ffffff"></a-light>
+        <a-light type="directional" intensity="0.4" position="3 4 3" color="#ffffff"></a-light>
+        <a-light type="point" intensity="0.4" position="-5 2.5 -3" color="#e0f0ff"></a-light>
+        <a-light type="point" intensity="0.4" position="5 2.5 -3" color="#e0f0ff"></a-light>
+
+        <!-- Ambiente Galeria -->
+        <a-sky color="#f5f5dc"></a-sky> <!-- Teto (bege) -->
+        <a-plane color="#8b6f47" rotation="-90 0 0" width="18" height="16" position="0 0 0" shadow></a-plane>
+        <a-plane color="#a0826d" rotation="-90 0 0" width="8" height="8" position="0 0.01 0" shadow></a-plane>
+        <a-plane color="#e8dcc7" rotation="90 0 0" width="18" height="16" position="0 3.8 0"></a-plane>
+        <!-- Teto -->
+
+        <!-- Estrutura Futurista (Paredes e Neon) -->
+        <a-plane color="#e8dcc7" width="18" height="3.8" position="0 1.9 -8"></a-plane>
+        <a-box color="#8b7355" width="18" height="0.15" depth="0.1" position="0 3.7 -8.03" emissive="#8b7355"></a-box>
+
+        <a-plane color="#e8dcc7" width="16" height="3.8" position="-9 1.9 0" rotation="0 90 0"></a-plane>
+        <a-box color="#8b7355" width="16" height="0.1" depth="0.1" position="-9 3.75 0" rotation="0 90 0"
+            emissive="#8b7355"></a-box>
+
+        <a-plane color="#e8dcc7" width="16" height="3.8" position="9 1.9 0" rotation="0 90 0"></a-plane>
+        <a-box color="#8b7355" width="16" height="0.1" depth="0.1" position="9 3.75 0" rotation="0 90 0"
+            emissive="#8b7355"></a-box>
+
+
+        <!-- Pedestal Central -->
+        <a-cylinder color="#8b7355" radius="0.85" height="0.5" position="0 0.0 -3" shadow></a-cylinder>
+        <a-cylinder color="#8b7355" radius="0.9" height="0.12" position="0 0.5 -3" shadow
+            emissive="#8b7355"></a-cylinder>
+
+
+        <!-- Título Principal da Galeria -->
+        <a-text id="gallery-main-title" value="" align="center" anchor="center" position="0 3 -7.8" color="#2c5f7f"
+            font-size="48" width="20" font-weight="bold"></a-text>
+
+        <!-- Colunas Futuristas -->
+        <a-cylinder color="#8b7355" radius="0.15" height="3.5" position="-7.5 1.75 -7.5" shadow
+            emissive="#8b7355"></a-cylinder>
+        <a-cylinder color="#8b7355" radius="0.15" height="3.5" position="7.5 1.75 -7.5" shadow
+            emissive="#8b7355"></a-cylinder>
+        <a-box color="#8b7355" width="16" height="0.04" depth="0.04" position="0 2.5 -7.95" shadow
+            emissive="#8b7355"></a-box>
+
+        <!-- Painéis Estáticos da Galeria -->
+        <!-- Esquerda -->
+        <a-entity id="gallery-panel-historia" class="clickable gallery-panel" data-id="historia" position="-6.8 2.3 -3"
+            rotation="0 15 0">
+            <a-box color="#e8dcc7" width="2.8" height="2.3" depth="0.08" shadow></a-box>
+            <a-text value="HISTORIA" position="0 -1.4 0" align="center" color="#2c3e50" font-size="20" width="7"
+                font-weight="bold"></a-text>
+        </a-entity>
+        <a-entity id="gallery-panel-tecnologia" class="clickable gallery-panel" data-id="tecnologia"
+            position="-6.8 2.3 3" rotation="0 15 0">
+            <a-box color="#e8dcc7" width="2.8" height="2.3" depth="0.08" shadow></a-box>
+            <a-text value="TECNOLOGIA" position="0 -1.4 0" align="center" color="#2c3e50" font-size="20" width="7"
+                font-weight="bold"></a-text>
+        </a-entity>
+
+        <!-- Direita -->
+        <a-entity id="gallery-panel-missoes" class="clickable gallery-panel" data-id="missoes" position="6.8 2.3 -3"
+            rotation="0 -15 0">
+            <a-box color="#e8dcc7" width="2.8" height="2.3" depth="0.08" shadow></a-box>
+            <a-text value="MISSOES" position="0 -1.4 0" align="center" color="#2c3e50" font-size="20" width="7"
+                font-weight="bold"></a-text>
+        </a-entity>
+
+        <a-entity id="gallery-panel-futuro" class="clickable gallery-panel" data-id="futuro" position="6.8 2.3 3"
+            rotation="0 -15 0">
+            <a-box color="#e8dcc7" width="2.8" height="2.3" depth="0.08" shadow></a-box>
+            <a-text value="FUTURO" position="0 -1.4 0" align="center" color="#2c3e50" font-size="20" width="7"
+                font-weight="bold"></a-text>
+        </a-entity>
+
+
+
+    </a-scene>
+
+    <script>
+        document.getElementById('portal-cena1').addEventListener('click', () => irParaCena(1));
+    </script>
+
+
+
+
+
+
+</body>
+
+</html>
