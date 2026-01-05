@@ -28,7 +28,6 @@ AFRAME.registerComponent('cursor-hover', {
     },
     init: function () {
         const cursor = document.querySelector('a-cursor');
-        const originalColor = cursor.getAttribute('color');
         const hoverColor = this.data.cursorColor;
 
         this.el.addEventListener('mouseenter', () => {
