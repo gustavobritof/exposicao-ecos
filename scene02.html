@@ -258,23 +258,31 @@
         <a-light type="point" intensity="0.4" position="-5 2.5 -3" color="#e0f0ff"></a-light>
         <!-- <a-light type="point" intensity="0.4" position="5 2.5 -3" color="#e0f0ff"></a-light> -->
 
+        <!-- ...existing code... -->
+
         <!-- Ambiente Galeria (Sala Menor Semi-circular) -->
         <a-sky src="#sky" animation="property: rotation; to: 0 360 0; loop: true; dur: 240000; easing: linear"></a-sky>
+
         <!-- Chão circular -->
         <a-circle color="#8b6f47" radius="5" rotation="-90 0 0" position="0 0 -2" shadow></a-circle>
         <a-circle color="#a0826d" radius="3" rotation="-90 0 0" position="0 0.01 -2" shadow></a-circle>
+
         <!-- Teto -->
         <a-circle color="#e8dcc7" radius="5" rotation="90 0 0" position="0 3.2 -2"></a-circle>
 
         <!-- Parede de fundo curva (semi-círculo) -->
         <a-curvedimage src="" height="3.2" radius="5" theta-length="180" rotation="0 0 0" position="0 1.6 -2"
-            material="color: #e8dcc7; side: double"></a-curvedimage>
+            material="color: #e8dcc7; side: double" class="wall"></a-curvedimage>
+
         <a-curvedimage src="" height="1" width="5" radius="5" theta-length="180" theta-start="180" rotation="0 0 0"
-            position="0 0.5 -2" material="color: #e8dcc7; side: double"></a-curvedimage>
+            position="0 0.5 -2" material="color: #e8dcc7; side: double" class="wall"></a-curvedimage>
+
         <!-- Cerca decorativa circular -->
         <!-- Anel horizontal da cerca -->
         <a-torus color="#8b7355" radius="3" radius-tubular="0.05" position="0 0.5 -2" rotation="90 0 0"
-            emissive="#8b7355" emissive-intensity="0.3"></a-torus>
+            emissive="#8b7355" emissive-intensity="0.3" class="wall"></a-torus>
+
+        <!-- ...existing code... -->
 
         <!-- Postes verticais da cerca (distribuídos ao redor) -->
         <a-cylinder color="#8b7355" radius="0.05" height="0.6" position="3 0.3 -2" emissive="#8b7355"

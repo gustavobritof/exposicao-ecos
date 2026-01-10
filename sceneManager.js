@@ -65,7 +65,7 @@ AFRAME.registerComponent('cursor-hover', {
 });
 
 
-// Componente para detecção de colisão com paredes
+// Componente para detecção de colisão com paredes (melhorado para círculos e torus)
 AFRAME.registerComponent('wall-collision', {
     schema: {
         radius: { type: 'number', default: 0.5 } // Raio de colisão do jogador
@@ -73,7 +73,17 @@ AFRAME.registerComponent('wall-collision', {
 
     init() {
         this.walls = [];
+        this.fences = []; // Array para cercas (torus)
         this.wallsLoaded = false;
+
+        // Configurações específicas para cena 02 (sala circular)
+        this.circularRoom = {
+            center: { x: 0, z: -2 }, // Centro da sala circular
+            outerRadius: 4.5,  // Raio da parede externa (5 - margem de 0.5)
+            fenceRadius: 3,    // Raio da cerca (torus)
+            fenceMargin: 0.3,  // Margem de colisão da cerca
+            active: false
+        };
     },
 
     tick() {
@@ -81,7 +91,53 @@ AFRAME.registerComponent('wall-collision', {
         const playerPos = player.object3D.position;
         const radius = this.data.radius;
 
-        // Carrega as paredes uma vez
+        // Detecta se está na scene02 (sala circular)
+        const sceneId = document.querySelector('a-scene').id;
+        if (sceneId === 'scene02') {
+            this.circularRoom.active = true;
+        }
+
+        // Colisão com sala circular (Scene02)
+        if (this.circularRoom.active) {
+            const dx = playerPos.x - this.circularRoom.center.x;
+            const dz = playerPos.z - this.circularRoom.center.z;
+            const distanceFromCenter = Math.sqrt(dx * dx + dz * dz);
+
+            // ===== COLISÃO COM PAREDE EXTERNA  =====
+            // A cerca já impede o jogador de chegar até a parede
+            /*
+            const maxDistance = this.circularRoom.outerRadius - radius;
+            if (distanceFromCenter > maxDistance) {
+                const angle = Math.atan2(dz, dx);
+                playerPos.x = this.circularRoom.center.x + Math.cos(angle) * maxDistance;
+                playerPos.z = this.circularRoom.center.z + Math.sin(angle) * maxDistance;
+            }
+            */
+
+            // ===== COLISÃO COM CERCA (TORUS) - ATIVA =====
+            const fenceInnerRadius = this.circularRoom.fenceRadius - this.circularRoom.fenceMargin;
+            const fenceOuterRadius = this.circularRoom.fenceRadius + this.circularRoom.fenceMargin;
+
+            // Se estiver dentro da área da cerca
+            if (distanceFromCenter >= fenceInnerRadius - radius && distanceFromCenter <= fenceOuterRadius + radius) {
+                const angle = Math.atan2(dz, dx);
+
+                // Se estava fora da cerca, empurra para fora
+                if (distanceFromCenter > this.circularRoom.fenceRadius) {
+                    playerPos.x = this.circularRoom.center.x + Math.cos(angle) * (fenceOuterRadius + radius);
+                    playerPos.z = this.circularRoom.center.z + Math.sin(angle) * (fenceOuterRadius + radius);
+                }
+                // Se estava dentro, empurra para dentro
+                else {
+                    playerPos.x = this.circularRoom.center.x + Math.cos(angle) * (fenceInnerRadius - radius);
+                    playerPos.z = this.circularRoom.center.z + Math.sin(angle) * (fenceInnerRadius - radius);
+                }
+            }
+
+            return; // Não verifica colisões AABB na sala circular
+        }
+
+        // Colisão AABB normal (Scene01)
         if (!this.wallsLoaded) {
             const wallElements = document.querySelectorAll('.wall');
             if (wallElements.length === 0) return;
@@ -105,32 +161,24 @@ AFRAME.registerComponent('wall-collision', {
         // Verifica colisão com cada parede
         this.walls.forEach(wall => {
             const wallPos = wall.el.object3D.position;
-            const wallRot = wall.el.object3D.rotation;
 
-            // Bounding box da parede (simplificado - assume sem rotação complexa)
             const halfWidth = wall.width / 2;
             const halfDepth = wall.depth / 2;
 
-            // Calcula distância em X e Z
             const dx = Math.abs(playerPos.x - wallPos.x);
             const dz = Math.abs(playerPos.z - wallPos.z);
 
-            // Verifica se há colisão (AABB simples)
             if (dx < (halfWidth + radius) && dz < (halfDepth + radius)) {
-                // Calcula quanto o jogador está penetrando na parede
                 const overlapX = (halfWidth + radius) - dx;
                 const overlapZ = (halfDepth + radius) - dz;
 
-                // Empurra o jogador na direção de menor overlap
                 if (overlapX < overlapZ) {
-                    // Empurra em X
                     if (playerPos.x < wallPos.x) {
                         playerPos.x -= overlapX;
                     } else {
                         playerPos.x += overlapX;
                     }
                 } else {
-                    // Empurra em Z
                     if (playerPos.z < wallPos.z) {
                         playerPos.z -= overlapZ;
                     } else {
@@ -141,6 +189,7 @@ AFRAME.registerComponent('wall-collision', {
         });
     }
 });
+
 
 // Loader personalizado com barra de progresso
 window.addEventListener('load', () => {
