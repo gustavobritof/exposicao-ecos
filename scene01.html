@@ -21,6 +21,89 @@
             opacity: 0;
             background-color: black;
         }
+
+        /* Joystick Limpo e Moderno - APENAS MOBILE */
+        #np {
+            display: none !important;
+            /* Escondido por padrão */
+            position: fixed !important;
+            width: 140px !important;
+            height: 140px !important;
+            left: 30px !important;
+            bottom: 30px !important;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.15), rgba(255, 255, 255, 0.05)) !important;
+            border: 3px solid rgba(255, 255, 255, 0.4) !important;
+            border-radius: 50% !important;
+            z-index: 20 !important;
+            touch-action: none !important;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5),
+                inset 0 0 20px rgba(255, 255, 255, 0.1) !important;
+            backdrop-filter: blur(5px) !important;
+        }
+
+        /* Mostra APENAS em dispositivos móveis/touch */
+        @media (hover: none) and (pointer: coarse) {
+            #np {
+                display: block !important;
+            }
+        }
+
+        /* Também mostra em telas pequenas */
+        @media (max-width: 768px) {
+            #np {
+                display: block !important;
+            }
+        }
+
+        #np p {
+            display: none !important;
+        }
+
+        /* Cruz direcional */
+        #np::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60%;
+            height: 2px;
+            background: rgba(255, 255, 255, 0.2);
+            z-index: 1;
+        }
+
+        #np::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 2px;
+            height: 60%;
+            background: rgba(255, 255, 255, 0.2);
+            z-index: 1;
+        }
+
+        /* Estiliza todos os elementos do NippleJS */
+        #np>div,
+        [id^="nipple_0_"] {
+            background: linear-gradient(145deg, #ffffff, #e0e0e0) !important;
+            border: 2px solid rgba(255, 255, 255, 0.8) !important;
+            border-radius: 50% !important;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3),
+                inset 0 -2px 5px rgba(0, 0, 0, 0.2),
+                inset 0 2px 5px rgba(255, 255, 255, 0.5) !important;
+            z-index: 2 !important;
+        }
+
+        @media (max-width: 480px) {
+            #np {
+                width: 120px !important;
+                height: 120px !important;
+                left: 20px !important;
+                bottom: 20px !important;
+            }
+        }
     </style>
     <link rel="stylesheet" href="screenloader.css">
     <script>
@@ -107,7 +190,7 @@
                             class="clickable" color="#ff6600" material="emissive: #ff6600; emissiveIntensity: 0.5;"
                             cursor-hover>
                             <a-text value="Ir para sala" position="0 0 0.040" align="center" anchor="center"
-                                color="#ffffff" font-size="16"></a-text>
+                                color="#ffffff" font-size="16" cursor-hover></a-text>
                         </a-box>
 
                     </a-plane>
@@ -127,7 +210,7 @@
                             class="clickable" color="#ff6600" material="emissive: #ff6600; emissiveIntensity: 0.5;"
                             cursor-hover>
                             <a-text value="Ir para sala" position="0 0 0.040" align="center" anchor="center"
-                                color="#ffffff" font-size="16"></a-text>
+                                cursor-hover color="#ffffff" font-size="16"></a-text>
                         </a-box>
                     </a-plane>
                 </a-entity>
@@ -146,7 +229,7 @@
                             class="clickable" color="#ff6600" material="emissive: #ff6600; emissiveIntensity: 0.5;"
                             cursor-hover>
                             <a-text value="Ir para sala" position="0 0 0.040" align="center" anchor="center"
-                                color="#ffffff" font-size="16"></a-text>
+                                color="#ffffff" font-size="16" cursor-hover></a-text>
                         </a-box>
                     </a-plane>
                 </a-entity>
@@ -165,7 +248,7 @@
                             class="clickable" color="#ff6600" material="emissive: #ff6600; emissiveIntensity: 0.5;"
                             cursor-hover>
                             <a-text value="Ir para sala" position="0 0 0.040" align="center" anchor="center"
-                                color="#ffffff" font-size="16"></a-text>
+                                cursor-hover color="#ffffff" font-size="16"></a-text>
                         </a-box>
                     </a-plane>
                 </a-entity>
@@ -184,7 +267,7 @@
                             class="clickable" color="#ff6600" material="emissive: #ff6600; emissiveIntensity: 0.5;"
                             cursor-hover>
                             <a-text value="Ir para sala" position="0 0 0.040" align="center" anchor="center"
-                                color="#ffffff" font-size="16"></a-text>
+                                cursor-hover color="#ffffff" font-size="16"></a-text>
                         </a-box>
                     </a-plane>
                 </a-entity>
@@ -198,15 +281,15 @@
 
 
         <a-camera id="camera" wall-collision position="0 1.6 0" cursor="rayOrigin: mouse"
-            raycaster="objects: .clickable; far: 20"
-            look-controls="pointerLockEnabled: true; reverseMouseDrag: false; touchEnabled: true"
+            raycaster="objects: .clickable; far: 20" look-controls="reverseMouseDrag: false"
             wasd-controls="enabled: true" mobile-look-controls>
-            <!-- removendo o fuse por enquanto -->
-            <a-cursor color="#ffffff" fuse="true" fuse-timeout="2000"
+
+            <a-cursor color="#ffffff" fuse="false" fuse-timeout="2000"
                 animation__fusing="property: scale; startEvents: fusing; easing: easeInCubic; dur: 2000; from: 1 1 1; to: 0.1 0.1 0.1"
                 animation__mouseleave="property: scale; startEvents: mouseleave; easing: easeInCubic; dur: 200; to: 1 1 1"></a-cursor>
 
         </a-camera>
+
 
 
 
@@ -602,7 +685,7 @@
                 animation="property: intensity; from: 0.8; to: 1.5; loop: true; dur: 1500; dir: alternate; easing: easeInOutSine">
             </a-light>
 
-            <a-circle radius="1" class="clickable" segments="64" vr-link="href: index.html"
+            <a-circle radius="1" class="clickable" segments="64" vr-link="href: index.html" cursor-hover
                 material="shader: portal; pano: #skyTexture; side: double">
             </a-circle>
 
@@ -721,6 +804,94 @@
             }, 500);
         }
 
+        AFRAME.registerComponent('mobile-look-controls', {
+            schema: {
+                sensitivity: { default: 0.3 }
+            },
+
+            init: function () {
+                // Desabilita pointer lock no desktop
+                const isMobile = AFRAME.utils.device.isMobile();
+
+                // Configura look-controls baseado no dispositivo
+                const lookControls = this.el.components['look-controls'];
+                if (lookControls) {
+                    if (isMobile) {
+                        // Mobile: desabilita look-controls padrão
+                        lookControls.pause();
+                    } else {
+                        // Desktop: configura look-controls sem pointer lock
+                        this.el.setAttribute('look-controls', {
+                            pointerLockEnabled: false,
+                            reverseMouseDrag: false,
+                            touchEnabled: false
+                        });
+                        return; // Não inicializa controles mobile
+                    }
+                }
+
+                // Resto do código só executa no mobile
+                this.onTouchStart = this.onTouchStart.bind(this);
+                this.onTouchMove = this.onTouchMove.bind(this);
+                this.onTouchEnd = this.onTouchEnd.bind(this);
+
+                this.touchStartX = 0;
+                this.touchStartY = 0;
+                this.isTouch = false;
+
+                this.el.sceneEl.addEventListener('enter-vr', () => {
+                    if (lookControls) lookControls.pause();
+                });
+
+                window.addEventListener('touchstart', this.onTouchStart, { passive: false });
+                window.addEventListener('touchmove', this.onTouchMove, { passive: false });
+                window.addEventListener('touchend', this.onTouchEnd, { passive: false });
+            },
+
+            onTouchStart: function (evt) {
+                if (evt.target.id === 'np' ||
+                    evt.target.closest('#np') ||
+                    (evt.target.classList && evt.target.classList.contains('clickable'))) {
+                    return;
+                }
+
+                this.isTouch = true;
+                this.touchStartX = evt.touches[0].clientX;
+                this.touchStartY = evt.touches[0].clientY;
+            },
+
+            onTouchMove: function (evt) {
+                if (!this.isTouch) return;
+
+                evt.preventDefault();
+
+                const deltaX = evt.touches[0].clientX - this.touchStartX;
+                const deltaY = evt.touches[0].clientY - this.touchStartY;
+
+                const rotation = this.el.getAttribute('rotation');
+
+                rotation.y -= deltaX * this.data.sensitivity;
+                rotation.x -= deltaY * this.data.sensitivity;
+                rotation.x = Math.max(-85, Math.min(85, rotation.x));
+
+                this.el.setAttribute('rotation', rotation);
+
+                this.touchStartX = evt.touches[0].clientX;
+                this.touchStartY = evt.touches[0].clientY;
+            },
+
+            onTouchEnd: function (evt) {
+                this.isTouch = false;
+            },
+
+            remove: function () {
+                if (AFRAME.utils.device.isMobile()) {
+                    window.removeEventListener('touchstart', this.onTouchStart);
+                    window.removeEventListener('touchmove', this.onTouchMove);
+                    window.removeEventListener('touchend', this.onTouchEnd);
+                }
+            }
+        });
 
     </script>
 
