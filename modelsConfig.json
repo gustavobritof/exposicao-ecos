@@ -2,18 +2,18 @@
     "hubble": {
         "scene01": {
             "position": "0 2 0",
-            "scale": "0.0003 0.0003 0.0003",
-            "rotation": "0 0 0"
+            "scale": "0.07 0.07 0.07",
+            "rotation": "90 0 0"
         },
         "scene02": {
-            "position": "-4 1.493 -2",
-            "scale": "0.0005 0.0005 0.0005",
-            "rotation": "0 0 0"
+            "position": "-4 1.7 -2",
+            "scale": "0.07 0.07 0.07",
+            "rotation": "90 0 0"
         },
         "scene03": {
-            "position": "0 6 0",
-            "scale": "0.005 0.005 0.005",
-            "rotation": "0 0 0"
+            "position": "0 4 0",
+            "scale": "0.5 0.5 0.5",
+            "rotation": "90 0 0"
         }
     },
     "jwst": {
@@ -45,7 +45,7 @@
             "rotation": "0 0 0"
         },
         "scene03": {
-            "position": "0 2 0",
+            "position": "0 4 0",
             "scale": "0.7 0.7 0.7",
             "rotation": "0 0 0"
         }

@@ -307,8 +307,8 @@
         <a-light type="directional" intensity="0.4" position="3 4 3" color="#ffffff"></a-light>
         <a-light type="point" intensity="0.4" position="-5 2.5 -3" color="#e0f0ff"></a-light>
         <!-- <a-light type="point" intensity="0.4" position="5 2.5 -3" color="#e0f0ff"></a-light> -->
-
-        <!-- ...existing code... -->
+        <a-light type="point" intensity="1.2" position="-4 2.5 -2" distance="3" color="#ffffff"></a-light>
+        <a-light type="point" intensity="0.8" position="-4 1.5 -1" distance="2" color="#e0f0ff"></a-light>
 
         <!-- Ambiente Galeria (Sala Menor Semi-circular) -->
         <a-sky src="#sky" animation="property: rotation; to: 0 360 0; loop: true; dur: 240000; easing: linear"></a-sky>
@@ -332,7 +332,7 @@
         <a-torus color="#8b7355" radius="3" radius-tubular="0.05" position="0 0.5 -2" rotation="90 0 0"
             emissive="#8b7355" emissive-intensity="0.3" class="wall"></a-torus>
 
-        <!-- ...existing code... -->
+
 
         <!-- Postes verticais da cerca (distribuídos ao redor) -->
         <a-cylinder color="#8b7355" radius="0.05" height="0.6" position="3 0.3 -2" emissive="#8b7355"
@@ -364,8 +364,7 @@
             emissive="#8b7355"></a-cylinder>
         <!-- MODELO 3D DINÂMICO no canto -->
         <a-entity id="dynamic-model-pedestal" class="clickable" position="-4 1.474 -2" scale="0.004 0.004 0.004"
-            rotation="0 45 0" cursor-hover
-            animation="property: rotation; to: 0 405 0; loop: true; dur: 8000; easing: linear" cursor-hover>
+            rotation="0 45 0" cursor-hover>
         </a-entity>
 
         <!-- Hotspot para visualização 3D -->
@@ -626,6 +625,37 @@
                         dynamicModel.setAttribute('position', currentConfig.position);
                         dynamicModel.setAttribute('scale', currentConfig.scale);
                         dynamicModel.setAttribute('rotation', currentConfig.rotation);
+
+
+                        if (modelType === 'hubble') {
+
+                            dynamicModel.setAttribute('animation', {
+                                property: 'rotation',
+                                to: '90 360 0',
+                                loop: true,
+                                dur: 8000,
+                                easing: 'linear'
+                            });
+                        } else if (modelType === 'voyager') {
+
+                            const rotParts = currentConfig.rotation.split(' ');
+                            dynamicModel.setAttribute('animation', {
+                                property: 'rotation',
+                                to: `${rotParts[0]} 360 ${rotParts[2]}`,
+                                loop: true,
+                                dur: 8000,
+                                easing: 'linear'
+                            });
+                        } else {
+
+                            dynamicModel.setAttribute('animation', {
+                                property: 'rotation',
+                                to: '0 360 0',
+                                loop: true,
+                                dur: 8000,
+                                easing: 'linear'
+                            });
+                        }
                     }
 
                     // Atualiza título da galeria
