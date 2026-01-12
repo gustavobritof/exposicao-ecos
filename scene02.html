@@ -235,7 +235,57 @@
                     </a-plane>
                 </a-entity>
             </template>
-            <!-- Imagens mockup para os painéis -->
+            <!-- Imagens dinâmicas para os painéis - Hubble -->
+            <img src="https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=800" id="hubble-historia-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?w=800" id="hubble-tecnologia-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1462331940025-496dfbfc7564?w=800" id="hubble-missoes-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1419242902214-272b3f66ee7a?w=800" id="hubble-futuro-img"
+                crossorigin="anonymous">
+
+            <!-- JWST -->
+            <img src="https://images.unsplash.com/photo-1608889825205-eebdb9fc5806?w=800" id="jwst-historia-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1581822261290-991b38693d1b?w=800" id="jwst-tecnologia-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1543722530-d2c3201371e7?w=800" id="jwst-missoes-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=800" id="jwst-futuro-img"
+                crossorigin="anonymous">
+
+            <!-- Voyager -->
+            <img src="https://images.unsplash.com/photo-1541873676-a18131494184?w=800" id="voyager-historia-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1614728894747-a83421e2b9c9?w=800" id="voyager-tecnologia-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1614313913007-2b4ae8ce32d6?w=800" id="voyager-missoes-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800" id="voyager-futuro-img"
+                crossorigin="anonymous">
+
+            <!-- Saturn V -->
+            <img src="https://images.unsplash.com/photo-1560094824-13b9bc472f86?w=800" id="saturnv-historia-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1610296669228-602fa827fc1f?w=800" id="saturnv-tecnologia-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1614728423169-3f65fd722b7e?w=800" id="saturnv-missoes-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1517976487492-5750f3195933?w=800" id="saturnv-futuro-img"
+                crossorigin="anonymous">
+
+            <!-- ISS -->
+            <img src="https://images.unsplash.com/photo-1581822261290-991b38693d1b?w=800" id="iss-historia-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1446776899648-aa78eefe8ed0?w=800" id="iss-tecnologia-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1454789476662-53eb23ba5907?w=800" id="iss-missoes-img"
+                crossorigin="anonymous">
+            <img src="https://images.unsplash.com/photo-1446776858070-7cc4b2cd8490?w=800" id="iss-futuro-img"
+                crossorigin="anonymous">
+
+            <!-- Fallback padrão -->
             <img src="images/background.jpg" id="panel-historia-img" crossorigin="anonymous">
             <img src="images/background.jpg" id="panel-tecnologia-img" crossorigin="anonymous">
             <img src="images/background.jpg" id="panel-missoes-img" crossorigin="anonymous">
@@ -429,6 +479,22 @@
 
 
     <script>
+        //  atualizar as imagens dos painéis baseado no modelo
+        function updatePanelImages(modelType) {
+            const panels = ['historia', 'tecnologia', 'missoes', 'futuro'];
+
+            panels.forEach(panel => {
+                const panelEntity = document.querySelector(`#gallery-panel-${panel}`);
+                const curvedImage = panelEntity?.querySelector('a-curvedimage');
+
+                if (curvedImage) {
+                    const imageId = `#${modelType}-${panel}-img`;
+                    console.log(`Atualizando painel ${panel} com imagem ${imageId}`);
+                    curvedImage.setAttribute('src', imageId);
+                }
+            });
+        }
+
         // Mapeamento de modelos para assets
         const modelAssets = {
             'hubble': '#hubble-asset',
@@ -572,6 +638,9 @@
                     };
 
                     document.getElementById('gallery-main-title').setAttribute('value', titles[modelType] || 'MUSEU ESPACIAL');
+
+                    // Atualiza as imagens dos painéis dinamicamente
+                    updatePanelImages(modelType);
 
                     // Adicionar evento de clique no modelo para abrir o painel 3D
                     if (dynamicModel) {
@@ -789,17 +858,27 @@
             });
         }
 
-        // Adicionar eventos de clique nos painéis
+        // Adicionar eventos de clique nos painéis (navega para páginas específicas)
         document.querySelectorAll('.gallery-panel').forEach(panel => {
             panel.addEventListener('click', () => {
                 const panelId = panel.getAttribute('data-id');
-                const modelType = sessionStorage.getItem('modeloExibicao') || 'hubble';
 
-                if (dialogContent[panelId] && dialogContent[panelId][modelType]) {
-                    const content = dialogContent[panelId][modelType];
-                    dialogTitle.textContent = content.title;
-                    dialogText.textContent = content.text;
-                    overlay.style.display = 'flex';
+                // Mapeamento de painéis para páginas HTML
+                const pageMap = {
+                    'historia': 'historia.html',
+                    'tecnologia': 'tecnologia.html',
+                    'missoes': 'missoes.html',
+                    'futuro': 'futuro.html'
+                };
+
+                const targetPage = pageMap[panelId];
+
+                if (targetPage) {
+                    // Fade out antes de navegar
+                    document.body.style.opacity = '0';
+                    setTimeout(() => {
+                        window.location.href = targetPage;
+                    }, 500);
                 }
             });
         });
@@ -824,14 +903,14 @@
                 // Desabilita pointer lock no desktop
                 const isMobile = AFRAME.utils.device.isMobile();
 
-                // Configura look-controls baseado no dispositivo
+                //  look-controls baseado no dispositivo
                 const lookControls = this.el.components['look-controls'];
                 if (lookControls) {
                     if (isMobile) {
                         // Mobile: desabilita look-controls padrão
                         lookControls.pause();
                     } else {
-                        // Desktop: configura look-controls sem pointer lock
+                        // Desktop:  look-controls sem pointer lock
                         this.el.setAttribute('look-controls', {
                             pointerLockEnabled: false,
                             reverseMouseDrag: false,
@@ -841,7 +920,7 @@
                     }
                 }
 
-                // Resto do código só executa no mobile
+
                 this.onTouchStart = this.onTouchStart.bind(this);
                 this.onTouchMove = this.onTouchMove.bind(this);
                 this.onTouchEnd = this.onTouchEnd.bind(this);
